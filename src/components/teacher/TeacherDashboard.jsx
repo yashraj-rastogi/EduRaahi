@@ -11,7 +11,10 @@ import {
   Sparkles,
   Award,
   CheckCircle,
-  HelpCircle,
+  Eye,
+  X,
+  History,
+  AlertOctagon,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
@@ -24,6 +27,7 @@ export default function TeacherDashboard({ onNavigate }) {
   const [classHeatmap, setClassHeatmap] = useState([]);
   const [interventions, setInterventions] = useState([]);
   const [users, setUsers] = useState({});
+  const [selectedStudent, setSelectedStudent] = useState(null); // Screen T04 Student Profile drill-down
 
   useEffect(() => {
     const update = () => {
@@ -43,6 +47,21 @@ export default function TeacherDashboard({ onNavigate }) {
   // Weakest skill in class
   const weakestSkill = [...classHeatmap].sort((a, b) => a.avgMastery - b.avgMastery)[0] || null;
 
+  // Roster of students
+  const studentRoster = Object.values(users).filter((u) => u.role === "student");
+
+  const handleOpenStudentProfile = (student) => {
+    const studentSkills = storageService.getStudentSkills(student.uid);
+    const studentAttempts = storageService.getAttempts(student.uid);
+    const studentInsights = storageService.getInsights(student.uid);
+    setSelectedStudent({
+      ...student,
+      skills: studentSkills,
+      attempts: studentAttempts,
+      insights: studentInsights,
+    });
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-fade-in">
       {/* Teacher Top Header */}
@@ -50,7 +69,7 @@ export default function TeacherDashboard({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#0A2858] text-white px-2 py-0.5 rounded-xs">
-              Screen T01 • Instructor Console
+              Screen T01 • T02 • T04
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               Class 3A — Learning Analytics & Intervention Command
@@ -148,20 +167,21 @@ export default function TeacherDashboard({ onNavigate }) {
                     showPercentage={false}
                   />
 
-                  {/* Student Chip Breakdown */}
-                  <div className="flex flex-wrap gap-2 pt-2 border-t border-[#DDE7F5] text-xs font-mono">
-                    <span className="text-[#8298BA] font-bold">Students:</span>
+                  {/* Student Chip Breakdown with Click to Inspect (T04) */}
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#DDE7F5] text-xs font-mono">
+                    <span className="text-[#8298BA] font-bold">Students (Click to Inspect):</span>
                     {item.students.map((st) => (
-                      <span
+                      <button
                         key={st.uid}
-                        className={`px-2 py-0.5 rounded-xs border text-[11px] font-bold ${
+                        onClick={() => handleOpenStudentProfile(users[st.uid] || { uid: st.uid, name: st.name })}
+                        className={`px-2 py-0.5 rounded-xs border text-[11px] font-bold cursor-pointer transition-transform active:scale-95 ${
                           st.mastery < 50
-                            ? "bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]"
-                            : "bg-white text-[#0A2858] border-[#0A2858]"
+                            ? "bg-[#FEF2F2] text-[#DC2626] border-[#DC2626] hover:bg-[#FEE2E2]"
+                            : "bg-white text-[#0A2858] border-[#0A2858] hover:bg-[#EAF2FF]"
                         }`}
                       >
-                        {st.name.split(" ")[0]}: {st.mastery}%
-                      </span>
+                        {st.name.split(" ")[0]}: {st.mastery}% 🔍
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -187,8 +207,40 @@ export default function TeacherDashboard({ onNavigate }) {
           )}
         </div>
 
-        {/* Col 3: Pending Interventions Preview */}
+        {/* Col 3: Student Roster & Pending Interventions Preview */}
         <div className="space-y-4">
+          {/* Student Roster Card (T04 Entry Points) */}
+          <NeoCard variant="default" shadow="sm">
+            <h4 className="font-heading font-bold text-sm uppercase tracking-wide text-[#0A2858] mb-3">
+              Screen T04 • Student Intelligence Roster
+            </h4>
+            <div className="space-y-2">
+              {studentRoster.map((st) => (
+                <div
+                  key={st.uid}
+                  onClick={() => handleOpenStudentProfile(st)}
+                  className="p-2.5 bg-[#F4F8FF] border-[1.5px] border-[#0A2858] rounded-sm flex items-center justify-between cursor-pointer hover:bg-[#EAF2FF] transition-all"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-sm bg-[#0A2858] text-white flex items-center justify-center font-mono font-bold text-xs">
+                      {st.avatar || "ST"}
+                    </div>
+                    <div>
+                      <div className="font-heading font-bold text-xs text-[#0A2858]">
+                        {st.name}
+                      </div>
+                      <div className="text-[10px] font-mono text-[#55729D]">
+                        {st.careerGoal || "Placement"}
+                      </div>
+                    </div>
+                  </div>
+                  <Eye className="w-4 h-4 text-[#1867E8]" />
+                </div>
+              ))}
+            </div>
+          </NeoCard>
+
+          {/* Pending Interventions Preview */}
           <NeoCard variant="default" shadow="md" className="border-[3px] border-[#0A2858]">
             <div className="flex items-center justify-between mb-3 border-b-2 border-[#0A2858] pb-2">
               <span className="font-mono text-xs font-bold uppercase text-[#1867E8]">
@@ -217,9 +269,6 @@ export default function TeacherDashboard({ onNavigate }) {
                   <p className="text-[11px] font-body text-[#55729D] line-clamp-2">
                     {item.suggestion}
                   </p>
-                  <div className="text-[10px] font-mono text-[#8298BA]">
-                    Status: <strong className="uppercase text-[#0A2858]">{item.status}</strong>
-                  </div>
                 </div>
               ))}
             </div>
@@ -236,6 +285,107 @@ export default function TeacherDashboard({ onNavigate }) {
           </NeoCard>
         </div>
       </div>
+
+      {/* Screen T04: Student Intelligence Profile Modal */}
+      {selectedStudent && (
+        <div className="fixed inset-0 z-50 bg-[#0A2858]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <NeoCard
+            variant="default"
+            shadow="lg"
+            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white border-[3px] border-[#0A2858] p-6 space-y-4"
+          >
+            <div className="flex items-center justify-between border-b-2 border-[#0A2858] pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-sm bg-[#0A2858] text-white flex items-center justify-center font-bold text-base">
+                  {selectedStudent.avatar || "ST"}
+                </div>
+                <div>
+                  <span className="font-mono text-xs font-bold uppercase text-[#1867E8]">
+                    Screen T04 • Student Intelligence Profile
+                  </span>
+                  <h3 className="font-heading font-extrabold text-xl text-[#0A2858]">
+                    {selectedStudent.name}
+                  </h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="btn-icon w-8 h-8"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-3 bg-[#EAF2FF] border-[1.5px] border-[#0A2858] rounded-sm text-xs font-mono text-[#0A2858] flex justify-between">
+              <div>
+                <strong>Academic Level:</strong> {selectedStudent.academicLevel || "B.Tech Year 3"}
+              </div>
+              <div>
+                <strong>Target Role:</strong> {selectedStudent.careerGoal || "Software Engineer"}
+              </div>
+            </div>
+
+            {/* Skill Mastery Breakdown */}
+            <div>
+              <h4 className="font-heading font-bold text-sm uppercase text-[#0A2858] mb-2">
+                Demonstrated Skill Breakdown:
+              </h4>
+              <div className="space-y-2">
+                {selectedStudent.skills?.map((sk) => (
+                  <div key={sk.id} className="p-2.5 bg-[#F4F8FF] border border-[#0A2858] rounded-xs">
+                    <div className="flex justify-between text-xs font-mono font-bold mb-1">
+                      <span>{sk.name}</span>
+                      <span>{sk.mastery}% ({sk.trend === "up" ? "↑" : sk.trend === "down" ? "↓" : "→"})</span>
+                    </div>
+                    <NeoProgressBar value={sk.mastery} color="dynamic" height="h-2" showPercentage={false} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Attempt History */}
+            <div>
+              <h4 className="font-heading font-bold text-sm uppercase text-[#0A2858] mb-2">
+                Recent Diagnostic & Practice Attempts:
+              </h4>
+              <div className="space-y-1.5 font-mono text-xs">
+                {selectedStudent.attempts && selectedStudent.attempts.length > 0 ? (
+                  selectedStudent.attempts.map((att, i) => (
+                    <div key={i} className="p-2 bg-white border border-[#0A2858] rounded-xs flex justify-between">
+                      <span>{att.assessmentTitle || "Assessment"}</span>
+                      <span className="font-bold text-[#1867E8]">Score: {att.score}/{att.totalQuestions} ({att.percentage}%)</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-2 text-[#8298BA] border border-dashed border-[#8298BA] rounded-xs">
+                    Initial diagnostic pending or completed in previous term.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t-2 border-[#0A2858] flex justify-between items-center">
+              <NeoButton
+                variant="secondary"
+                size="sm"
+                onClick={() => setSelectedStudent(null)}
+              >
+                Close Profile
+              </NeoButton>
+              <NeoButton
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  setSelectedStudent(null);
+                  onNavigate("intervention_queue");
+                }}
+              >
+                Create Intervention for Student →
+              </NeoButton>
+            </div>
+          </NeoCard>
+        </div>
+      )}
     </div>
   );
 }

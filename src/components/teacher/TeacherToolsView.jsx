@@ -9,6 +9,8 @@ import {
   Plus,
   ShieldCheck,
   ArrowRight,
+  MessageSquare,
+  Award,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
@@ -16,9 +18,9 @@ import NeoBadge from "../common/NeoBadge";
 import { storageService } from "../../lib/storage";
 
 export default function TeacherToolsView({ onNavigate }) {
-  const [activeTab, setActiveTab] = useState("assessment"); // 'assessment' | 'content'
+  const [activeTab, setActiveTab] = useState("assessment"); // 'assessment' | 'feedback' | 'content'
 
-  // Assessment Generator State
+  // Assessment Generator State (T06)
   const [topic, setTopic] = useState("Recursion & Dynamic Programming");
   const [difficulty, setDifficulty] = useState("intermediate");
   const [count, setCount] = useState(3);
@@ -26,7 +28,25 @@ export default function TeacherToolsView({ onNavigate }) {
   const [loadingGenerate, setLoadingGenerate] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
 
-  // Content Generator State
+  // Assignment Feedback Assistant State (T07 / P12)
+  const [studentName, setStudentName] = useState("Rahul Sharma");
+  const [assignmentCode, setAssignmentCode] = useState(
+    `function inorderTraversal(root) {\n  const result = [];\n  function traverse(node) {\n    if (node === null) return;\n    traverse(node.left);\n    result.push(node.val);\n    traverse(node.right);\n  }\n  traverse(root);\n  return result;\n}`
+  );
+  const [rubricScores, setRubricScores] = useState({
+    correctness: 10,
+    codeQuality: 9,
+    edgeCases: 8,
+    efficiency: 9,
+  });
+  const [suggestions, setSuggestions] = useState([
+    "Add explicit TypeScript interfaces or JSDoc comments to document TreeNode types.",
+    "Consider adding unit tests for skewed degenerate trees to verify call-stack limits.",
+    "Well done on handling the base case with strict null equality checks.",
+  ]);
+  const [feedbackSent, setFeedbackSent] = useState(false);
+
+  // Content Generator State (T08)
   const [contentTopic, setContentTopic] = useState("Binary Tree Traversals");
   const [generatedContent, setGeneratedContent] = useState(null);
   const [loadingContent, setLoadingContent] = useState(false);
@@ -103,6 +123,11 @@ export default function TeacherToolsView({ onNavigate }) {
     setPublishSuccess(true);
   };
 
+  const handleSendFeedback = () => {
+    setFeedbackSent(true);
+    setTimeout(() => setFeedbackSent(false), 3000);
+  };
+
   const handleGenerateContent = () => {
     setLoadingContent(true);
     setTimeout(() => {
@@ -132,22 +157,22 @@ export default function TeacherToolsView({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#0A2858] text-white px-2 py-0.5 rounded-xs">
-              Screen T06 • T08
+              Screen T06 • T07 • T08
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
-              Teacher Authoring & Teaching Assistant
+              Teacher Authoring & Evaluation Suite
             </h1>
           </div>
           <p className="font-body text-sm text-[#55729D] mt-1">
-            AI-assisted assessment generator and curriculum content creation with mandatory teacher review gate.
+            AI-assisted assessment generator, rubric feedback assistant, and curriculum package authoring.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setActiveTab("assessment")}
-            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase ${
+            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase transition-all ${
               activeTab === "assessment"
                 ? "bg-[#1867E8] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
                 : "bg-white text-[#0A2858] border-[#0A2858]"
@@ -156,8 +181,18 @@ export default function TeacherToolsView({ onNavigate }) {
             Assessment Builder (T06)
           </button>
           <button
+            onClick={() => setActiveTab("feedback")}
+            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase transition-all ${
+              activeTab === "feedback"
+                ? "bg-[#1867E8] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
+                : "bg-white text-[#0A2858] border-[#0A2858]"
+            }`}
+          >
+            Assignment Feedback (T07)
+          </button>
+          <button
             onClick={() => setActiveTab("content")}
-            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase ${
+            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase transition-all ${
               activeTab === "content"
                 ? "bg-[#1867E8] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
                 : "bg-white text-[#0A2858] border-[#0A2858]"
@@ -236,7 +271,6 @@ export default function TeacherToolsView({ onNavigate }) {
               </div>
             )}
 
-            {/* Generated Draft Review */}
             {draftQuestions && (
               <div className="space-y-4 pt-4 border-t-2 border-[#0A2858]">
                 <div className="flex items-center justify-between">
@@ -286,7 +320,106 @@ export default function TeacherToolsView({ onNavigate }) {
         </div>
       )}
 
-      {/* TAB 2: T08 TEACHER CONTENT ASSISTANT */}
+      {/* TAB 2: T07 AI ASSIGNMENT FEEDBACK ASSISTANT (P12) */}
+      {activeTab === "feedback" && (
+        <div className="space-y-6">
+          <NeoCard variant="default" shadow="md">
+            <div className="flex items-center justify-between border-b-2 border-[#DDE7F5] pb-3 mb-4">
+              <div>
+                <h3 className="font-heading font-extrabold text-lg text-[#0A2858]">
+                  Screen T07 • AI Rubric Evaluation & Feedback Assistant
+                </h3>
+                <p className="font-body text-xs text-[#55729D]">
+                  Assisted evaluation of student submissions against rubric with complete teacher override.
+                </p>
+              </div>
+              <NeoBadge variant="accent">Student: {studentName}</NeoBadge>
+            </div>
+
+            {feedbackSent && (
+              <div className="p-3 bg-[#DCFCE7] border-[2px] border-[#16A34A] rounded-sm text-xs font-mono font-bold text-[#16A34A] mb-4">
+                ✓ Feedback and scores sent to {studentName} successfully!
+              </div>
+            )}
+
+            {/* Submission Code */}
+            <div className="mb-4">
+              <label className="block text-xs font-mono font-bold uppercase text-[#55729D] mb-1">
+                Student Submitted Code (Tree Traversal):
+              </label>
+              <pre className="p-3.5 bg-[#0A2858] text-[#F4F8FF] font-mono text-xs rounded-sm overflow-x-auto border-[2px] border-[#0A2858]">
+                {assignmentCode}
+              </pre>
+            </div>
+
+            {/* Rubric Criteria with Teacher Override */}
+            <div className="mb-6">
+              <h4 className="font-heading font-bold text-sm uppercase text-[#0A2858] mb-2">
+                Rubric Criteria Evaluation (Teacher Overridable):
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {Object.keys(rubricScores).map((crit) => (
+                  <div key={crit} className="p-3 bg-[#F4F8FF] border-[1.5px] border-[#0A2858] rounded-sm">
+                    <label className="block text-[11px] font-mono font-bold uppercase text-[#55729D] mb-1">
+                      {crit}
+                    </label>
+                    <div className="flex items-center gap-1 font-mono text-lg font-bold text-[#0A2858]">
+                      <input
+                        type="number"
+                        min={0}
+                        max={10}
+                        value={rubricScores[crit]}
+                        onChange={(e) =>
+                          setRubricScores({ ...rubricScores, [crit]: Number(e.target.value) })
+                        }
+                        className="w-12 p-1 bg-white border border-[#0A2858] rounded-xs text-center text-sm font-bold"
+                      />
+                      <span>/ 10</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* AI Generated Improvement Suggestions */}
+            <div className="mb-6">
+              <h4 className="font-heading font-bold text-sm uppercase text-[#0A2858] mb-2">
+                Teacher-Editable Suggestions for Student:
+              </h4>
+              <div className="space-y-2">
+                {suggestions.map((sug, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#1867E8]">#{i + 1}</span>
+                    <input
+                      type="text"
+                      value={sug}
+                      onChange={(e) => {
+                        const updated = [...suggestions];
+                        updated[i] = e.target.value;
+                        setSuggestions(updated);
+                      }}
+                      className="flex-1 p-2 bg-white border border-[#0A2858] rounded-xs text-xs font-body text-[#0A2858]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-4 border-t-2 border-[#0A2858] flex justify-end">
+              <NeoButton
+                variant="primary"
+                size="md"
+                onClick={handleSendFeedback}
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Approve & Send Feedback to Rahul</span>
+              </NeoButton>
+            </div>
+          </NeoCard>
+        </div>
+      )}
+
+      {/* TAB 3: T08 TEACHER CONTENT ASSISTANT */}
       {activeTab === "content" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
@@ -337,7 +470,7 @@ export default function TeacherToolsView({ onNavigate }) {
                   </ul>
                 </div>
 
-                <div className="p-4 bg-[#F0FDF4] border-[1.5px] border-[#16A34A] rounded-sm text-xs font-mono text-[#166534]">
+                <div className="p-4 bg-[#F0FDF4] border-[1.5px] border-[#16A34A] rounded-sm text-xs font-mono text-[#16A34A]">
                   <strong>Quick Revision Summary:</strong> {generatedContent.revisionSheet}
                 </div>
               </div>

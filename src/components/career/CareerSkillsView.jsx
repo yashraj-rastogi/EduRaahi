@@ -13,6 +13,7 @@ import {
   ArrowRight,
   TrendingUp,
   ShieldCheck,
+  Compass,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
@@ -21,7 +22,7 @@ import NeoProgressBar from "../common/NeoProgressBar";
 import { storageService } from "../../lib/storage";
 
 export default function CareerSkillsView({ onNavigate }) {
-  const [activeTab, setActiveTab] = useState("map"); // 'map' | 'resume' | 'viva'
+  const [activeTab, setActiveTab] = useState("navigator"); // 'navigator' | 'map' | 'resume' | 'projects' | 'viva'
   const [careerGoal, setCareerGoal] = useState(storageService.getCareerGoal("uid_rahul"));
   const [skills, setSkills] = useState(storageService.getStudentSkills("uid_rahul"));
 
@@ -29,7 +30,38 @@ export default function CareerSkillsView({ onNavigate }) {
   const [resumeText, setResumeText] = useState("");
   const [resumeAnalysis, setResumeAnalysis] = useState(null);
 
-  // Viva State
+  // Projects State (P18)
+  const [projects, setProjects] = useState([
+    {
+      id: "proj_1",
+      title: "Distributed KV-Store with BST Indexing",
+      role: "Backend Engineer",
+      targetGap: "Tree Traversal & BST Algorithms",
+      status: "in_progress",
+      impact: "High Employability (+18% placement match)",
+      description: "Implement an in-memory key-value store using balanced AVL/BST index structures and log-structured storage.",
+    },
+    {
+      id: "proj_2",
+      title: "Real-time Collaborative Whiteboard",
+      role: "Full Stack Engineer",
+      targetGap: "Graph Traversal & WebSockets",
+      status: "recommended",
+      impact: "Demonstrates Multi-Client Concurrency",
+      description: "Build an interactive canvas whiteboard with live cursor broadcasting and topological graph sorting.",
+    },
+    {
+      id: "proj_3",
+      title: "Algorithmic Trading Order Book",
+      role: "Backend Engineer",
+      targetGap: "Time Complexity & Memory Management",
+      status: "recommended",
+      impact: "High-Frequency System Design",
+      description: "Low-latency limit order book with O(1) order cancellation using hash maps and doubly-linked priority queues.",
+    },
+  ]);
+
+  // Viva State (P13)
   const [vivaStep, setVivaStep] = useState(1);
   const [vivaAnswer, setVivaAnswer] = useState("");
   const [vivaReport, setVivaReport] = useState(null);
@@ -49,7 +81,6 @@ export default function CareerSkillsView({ onNavigate }) {
   };
 
   const handleAnalyzeResume = () => {
-    // Cross-reference claimed skills against platform demonstrated skills
     const treeSkill = skills.find((s) => s.skillId === "skill_trees");
     const recSkill = skills.find((s) => s.skillId === "skill_recursion");
     const arrSkill = skills.find((s) => s.skillId === "skill_arrays");
@@ -102,6 +133,18 @@ export default function CareerSkillsView({ onNavigate }) {
     }
   };
 
+  const handleToggleProject = (id) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id === id) {
+          const nextStatus = p.status === "recommended" ? "in_progress" : p.status === "in_progress" ? "completed" : "recommended";
+          return { ...p, status: nextStatus };
+        }
+        return p;
+      })
+    );
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto animate-fade-in">
       {/* Header */}
@@ -109,23 +152,25 @@ export default function CareerSkillsView({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2 py-0.5 border border-[#0A2858] rounded-xs">
-              Category 4 • Career & Skills
+              Category 4 • Career & Employability
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               Career Navigator & Employability Intelligence
             </h1>
           </div>
           <p className="font-body text-sm text-[#55729D] mt-1">
-            Connect verified platform competencies directly to target placement roles and resume verification.
+            Connect verified platform competencies directly to target placement roles, resume verification, and interview prep.
           </p>
         </div>
 
         {/* Tab Switcher */}
         <div className="flex flex-wrap items-center gap-2">
           {[
-            { id: "map", label: "Skill-Career Map (S15)", icon: Target },
-            { id: "resume", label: "Resume Analyzer (S16)", icon: FileText },
-            { id: "viva", label: "AI Viva Simulator (S13)", icon: Mic },
+            { id: "navigator", label: "Navigator (S14)", icon: Compass },
+            { id: "map", label: "Skill Map (S15)", icon: Target },
+            { id: "resume", label: "Resume (S16)", icon: FileText },
+            { id: "projects", label: "Projects (S17)", icon: FolderGit2 },
+            { id: "viva", label: "Viva (S13)", icon: Mic },
           ].map((t) => {
             const Icon = t.icon;
             const isActive = activeTab === t.id;
@@ -147,7 +192,76 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       </div>
 
-      {/* TAB 1: S15 SKILL-TO-CAREER MAPPING */}
+      {/* TAB 1: S14 AI CAREER NAVIGATOR (P14) */}
+      {activeTab === "navigator" && (
+        <div className="space-y-6">
+          <NeoCard variant="default" shadow="md">
+            <h3 className="font-heading font-extrabold text-lg text-[#0A2858] mb-1">
+              Screen S14 • AI Career Match Navigator
+            </h3>
+            <p className="font-body text-xs text-[#55729D] mb-4">
+              Ranked career matches grounded strictly in your verified platform skill scores.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                {
+                  role: "Backend Software Engineer",
+                  match: careerGoal?.readinessScore || 58,
+                  status: "Primary Goal",
+                  rationale: "Strong in Arrays (85%) & Strings (74%). Tree Traversal and Recursion are key advancement priorities.",
+                  badge: "accent",
+                },
+                {
+                  role: "Full Stack Developer",
+                  match: 72,
+                  status: "High Match",
+                  rationale: "Good algorithmic fundamentals combined with API structuring skills. Lowest gap friction.",
+                  badge: "default",
+                },
+                {
+                  role: "Data Systems Engineer",
+                  match: 51,
+                  status: "Emerging Match",
+                  rationale: "Requires advanced Graph algorithms and complexity optimization before interview readiness.",
+                  badge: "default",
+                },
+              ].map((c, i) => (
+                <div
+                  key={i}
+                  className="p-4 bg-[#F4F8FF] border-[2px] border-[#0A2858] rounded-sm flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <NeoBadge variant={c.badge}>{c.status}</NeoBadge>
+                      <span className="font-mono text-2xl font-extrabold text-[#0A2858]">
+                        {c.match}%
+                      </span>
+                    </div>
+                    <h4 className="font-heading font-bold text-base text-[#0A2858] mb-2">
+                      {c.role}
+                    </h4>
+                    <p className="font-body text-xs text-[#55729D] leading-relaxed mb-4">
+                      {c.rationale}
+                    </p>
+                  </div>
+
+                  <NeoButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setActiveTab("map")}
+                    className="w-full text-xs"
+                  >
+                    View Role Skill Map
+                  </NeoButton>
+                </div>
+              ))}
+            </div>
+          </NeoCard>
+        </div>
+      )}
+
+      {/* TAB 2: S15 SKILL-TO-CAREER MAPPING */}
       {activeTab === "map" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
@@ -214,7 +328,7 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       )}
 
-      {/* TAB 2: S16 RESUME SKILL GAP ANALYZER */}
+      {/* TAB 3: S16 RESUME SKILL GAP ANALYZER */}
       {activeTab === "resume" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
@@ -289,7 +403,57 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       )}
 
-      {/* TAB 3: S13 AI VIVA SIMULATOR */}
+      {/* TAB 4: S17 CAREER PROJECT RECOMMENDER (P18) */}
+      {activeTab === "projects" && (
+        <div className="space-y-6">
+          <NeoCard variant="default" shadow="md">
+            <h3 className="font-heading font-extrabold text-lg text-[#0A2858] mb-1">
+              Screen S17 • Employability Project Recommender
+            </h3>
+            <p className="font-body text-xs text-[#55729D] mb-4">
+              Recommended projects specifically targeted at proving demonstrated skill to recruiters and closing resume gaps.
+            </p>
+
+            <div className="space-y-4">
+              {projects.map((proj) => (
+                <div
+                  key={proj.id}
+                  className="p-4 bg-[#F4F8FF] border-[2px] border-[#0A2858] rounded-sm space-y-2"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-heading font-bold text-base text-[#0A2858]">
+                        {proj.title}
+                      </span>
+                      <NeoBadge variant={proj.status === "completed" ? "success" : proj.status === "in_progress" ? "accent" : "default"}>
+                        {proj.status.replace("_", " ")}
+                      </NeoBadge>
+                    </div>
+
+                    <button
+                      onClick={() => handleToggleProject(proj.id)}
+                      className="btn btn-secondary text-xs px-2.5 py-1"
+                    >
+                      Mark {proj.status === "completed" ? "Recommended" : proj.status === "in_progress" ? "Completed" : "In Progress"}
+                    </button>
+                  </div>
+
+                  <p className="font-body text-xs text-[#55729D] leading-relaxed">
+                    {proj.description}
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-[#DDE7F5] text-xs font-mono">
+                    <span className="text-[#DC2626] font-bold">Target Gap: {proj.targetGap}</span>
+                    <span className="text-[#16A34A] font-bold">• {proj.impact}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </NeoCard>
+        </div>
+      )}
+
+      {/* TAB 5: S13 AI VIVA SIMULATOR */}
       {activeTab === "viva" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">

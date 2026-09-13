@@ -13,6 +13,7 @@ import {
   TrendingDown,
   Info,
   GitBranch,
+  Network,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
@@ -24,6 +25,7 @@ export default function LearningIntelligenceHub({ onNavigate }) {
   const [skills, setSkills] = useState(storageService.getStudentSkills("uid_rahul"));
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [insights, setInsights] = useState(storageService.getInsights("uid_rahul"));
+  const [viewMode, setViewMode] = useState("graph"); // 'graph' | 'cards'
 
   useEffect(() => {
     const unsub = storageService.subscribe(() => {
@@ -35,6 +37,9 @@ export default function LearningIntelligenceHub({ onNavigate }) {
 
   // Set default selected skill to Trees if none selected
   const activeSkill = selectedSkill || skills.find((s) => s.skillId === "skill_trees") || skills[0];
+
+  // Helper to get skill by id
+  const getSkill = (id) => skills.find((s) => s.skillId === id) || { name: id, mastery: 50 };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-fade-in">
@@ -50,18 +55,28 @@ export default function LearningIntelligenceHub({ onNavigate }) {
             </h1>
           </div>
           <p className="font-body text-sm text-[#55729D] mt-1">
-            Structured skill taxonomy, evidence-backed gap analysis, and misconception diagnostics.
+            Structured skill taxonomy, dependency graph, evidence-backed gap analysis, and misconception diagnostics.
           </p>
         </div>
 
-        <NeoButton
-          variant="primary"
-          size="md"
-          onClick={() => onNavigate("assess_improve")}
-        >
-          <span>Launch Reassessment Practice</span>
-          <ArrowRight className="w-4 h-4" />
-        </NeoButton>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode(viewMode === "graph" ? "cards" : "graph")}
+            className="btn btn-secondary text-xs px-3 py-2 flex items-center gap-1.5"
+          >
+            <Network className="w-3.5 h-3.5 text-[#1867E8]" />
+            <span>{viewMode === "graph" ? "View Card Grid" : "View Dependency Graph"}</span>
+          </button>
+
+          <NeoButton
+            variant="primary"
+            size="md"
+            onClick={() => onNavigate("assess_improve")}
+          >
+            <span>Launch Practice</span>
+            <ArrowRight className="w-4 h-4" />
+          </NeoButton>
+        </div>
       </div>
 
       {/* Main Intelligence Grid */}
@@ -73,7 +88,7 @@ export default function LearningIntelligenceHub({ onNavigate }) {
               <div className="flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-[#1867E8]" />
                 <h3 className="font-heading font-bold text-base text-[#0A2858] uppercase tracking-wide">
-                  Structured Skill Taxonomy & Graph
+                  {viewMode === "graph" ? "Prerequisite Dependency Graph (DAG)" : "Structured Skill Taxonomy"}
                 </h3>
               </div>
               <span className="text-xs font-mono text-[#55729D]">
@@ -81,65 +96,175 @@ export default function LearningIntelligenceHub({ onNavigate }) {
               </span>
             </div>
 
-            {/* Skill Taxonomy Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {skills.map((skill) => {
-                const isSelected = activeSkill?.id === skill.id;
-                const isWeak = skill.mastery < 50;
-
-                return (
-                  <div
-                    key={skill.id}
-                    onClick={() => setSelectedSkill(skill)}
-                    className={`p-4 rounded-md border-[2px] cursor-pointer transition-all duration-150 ${
-                      isSelected
-                        ? "bg-[#EAF2FF] border-[#1867E8] shadow-[4px_4px_0px_#0A2858] -translate-y-1"
-                        : "bg-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858] hover:bg-[#F4F8FF]"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <span className="font-heading font-bold text-sm text-[#0A2858]">
-                        {skill.name}
-                      </span>
-                      <span
-                        className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded-xs border ${
-                          skill.mastery >= 75
-                            ? "bg-[#DCFCE7] text-[#16A34A] border-[#16A34A]"
-                            : skill.mastery >= 50
-                            ? "bg-[#EAF2FF] text-[#1867E8] border-[#0A2858]"
-                            : "bg-[#FEE2E2] text-[#DC2626] border-[#DC2626]"
-                        }`}
-                      >
-                        {skill.mastery}%
-                      </span>
-                    </div>
-
-                    <p className="text-xs font-body text-[#55729D] line-clamp-2 mb-3">
-                      {skill.description}
-                    </p>
-
-                    <NeoProgressBar
-                      value={skill.mastery}
-                      color="dynamic"
-                      height="h-2"
-                      showPercentage={false}
-                    />
-
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#DDE7F5] text-[11px] font-mono text-[#8298BA]">
-                      <span>
-                        Trend:{" "}
-                        <strong className="text-[#0A2858]">
-                          {skill.trend === "up" ? "↑ Rising" : skill.trend === "down" ? "↓ Declining" : "→ Steady"}
-                        </strong>
-                      </span>
-                      {skill.prerequisites?.length > 0 && (
-                        <span>Requires: {skill.prerequisites.length} prior</span>
-                      )}
-                    </div>
+            {/* Visual Dependency Tree View */}
+            {viewMode === "graph" ? (
+              <div className="p-4 bg-[#F4F8FF] border-[2px] border-[#0A2858] rounded-sm space-y-6">
+                {/* Level 1: Foundation */}
+                <div>
+                  <div className="font-mono text-[11px] font-bold uppercase text-[#8298BA] mb-2">
+                    Level 1: Foundation Memory Structures
                   </div>
-                );
-              })}
-            </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {["skill_arrays", "skill_complexity"].map((id) => {
+                      const sk = getSkill(id);
+                      const isSelected = activeSkill?.id === sk.id;
+                      return (
+                        <div
+                          key={id}
+                          onClick={() => setSelectedSkill(sk)}
+                          className={`p-3.5 border-[2px] rounded-sm cursor-pointer transition-all ${
+                            isSelected
+                              ? "bg-[#EAF2FF] border-[#1867E8] shadow-[3px_3px_0px_#0A2858] -translate-y-0.5"
+                              : "bg-white border-[#0A2858] shadow-[1px_1px_0px_#0A2858] hover:bg-[#F4F8FF]"
+                          }`}
+                        >
+                          <div className="flex justify-between items-center text-xs font-mono font-bold mb-1">
+                            <span className="text-[#0A2858]">{sk.name}</span>
+                            <span className="text-[#1867E8]">{sk.mastery}%</span>
+                          </div>
+                          <NeoProgressBar value={sk.mastery} color="dynamic" height="h-2" showPercentage={false} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Arrow Connector */}
+                <div className="flex justify-around text-center text-[#1867E8] font-mono text-xs font-bold">
+                  <div>↓ prerequisite for Strings & Recursion</div>
+                  <div>↓ prerequisite for Algorithms</div>
+                </div>
+
+                {/* Level 2: Intermediate Call Stack */}
+                <div>
+                  <div className="font-mono text-[11px] font-bold uppercase text-[#8298BA] mb-2">
+                    Level 2: Intermediate Inductive Reasoning
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {["skill_strings", "skill_recursion"].map((id) => {
+                      const sk = getSkill(id);
+                      const isSelected = activeSkill?.id === sk.id;
+                      return (
+                        <div
+                          key={id}
+                          onClick={() => setSelectedSkill(sk)}
+                          className={`p-3.5 border-[2px] rounded-sm cursor-pointer transition-all ${
+                            isSelected
+                              ? "bg-[#EAF2FF] border-[#1867E8] shadow-[3px_3px_0px_#0A2858] -translate-y-0.5"
+                              : "bg-white border-[#0A2858] shadow-[1px_1px_0px_#0A2858] hover:bg-[#F4F8FF]"
+                          }`}
+                        >
+                          <div className="flex justify-between items-center text-xs font-mono font-bold mb-1">
+                            <span className="text-[#0A2858]">{sk.name}</span>
+                            <span className={sk.mastery < 50 ? "text-[#DC2626]" : "text-[#1867E8]"}>
+                              {sk.mastery}%
+                            </span>
+                          </div>
+                          <NeoProgressBar value={sk.mastery} color="dynamic" height="h-2" showPercentage={false} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Arrow Connector */}
+                <div className="flex justify-around text-center text-[#1867E8] font-mono text-xs font-bold">
+                  <div>—</div>
+                  <div>↓ prerequisite for Trees & Hierarchies</div>
+                </div>
+
+                {/* Level 3: Advanced Hierarchical & Graph Structures */}
+                <div>
+                  <div className="font-mono text-[11px] font-bold uppercase text-[#8298BA] mb-2">
+                    Level 3: Advanced Tree & Graph Traversal
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {["skill_trees", "skill_graphs"].map((id) => {
+                      const sk = getSkill(id);
+                      const isSelected = activeSkill?.id === sk.id;
+                      return (
+                        <div
+                          key={id}
+                          onClick={() => setSelectedSkill(sk)}
+                          className={`p-3.5 border-[2px] rounded-sm cursor-pointer transition-all ${
+                            isSelected
+                              ? "bg-[#EAF2FF] border-[#1867E8] shadow-[3px_3px_0px_#0A2858] -translate-y-0.5"
+                              : "bg-white border-[#0A2858] shadow-[1px_1px_0px_#0A2858] hover:bg-[#F4F8FF]"
+                          }`}
+                        >
+                          <div className="flex justify-between items-center text-xs font-mono font-bold mb-1">
+                            <span className="text-[#0A2858]">{sk.name}</span>
+                            <span className={sk.mastery < 50 ? "text-[#DC2626]" : "text-[#16A34A]"}>
+                              {sk.mastery}%
+                            </span>
+                          </div>
+                          <NeoProgressBar value={sk.mastery} color="dynamic" height="h-2" showPercentage={false} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Card Grid View */
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {skills.map((skill) => {
+                  const isSelected = activeSkill?.id === skill.id;
+
+                  return (
+                    <div
+                      key={skill.id}
+                      onClick={() => setSelectedSkill(skill)}
+                      className={`p-4 rounded-md border-[2px] cursor-pointer transition-all duration-150 ${
+                        isSelected
+                          ? "bg-[#EAF2FF] border-[#1867E8] shadow-[4px_4px_0px_#0A2858] -translate-y-1"
+                          : "bg-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858] hover:bg-[#F4F8FF]"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <span className="font-heading font-bold text-sm text-[#0A2858]">
+                          {skill.name}
+                        </span>
+                        <span
+                          className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded-xs border ${
+                            skill.mastery >= 75
+                              ? "bg-[#DCFCE7] text-[#16A34A] border-[#16A34A]"
+                              : skill.mastery >= 50
+                              ? "bg-[#EAF2FF] text-[#1867E8] border-[#0A2858]"
+                              : "bg-[#FEE2E2] text-[#DC2626] border-[#DC2626]"
+                          }`}
+                        >
+                          {skill.mastery}%
+                        </span>
+                      </div>
+
+                      <p className="text-xs font-body text-[#55729D] line-clamp-2 mb-3">
+                        {skill.description}
+                      </p>
+
+                      <NeoProgressBar
+                        value={skill.mastery}
+                        color="dynamic"
+                        height="h-2"
+                        showPercentage={false}
+                      />
+
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#DDE7F5] text-[11px] font-mono text-[#8298BA]">
+                        <span>
+                          Trend:{" "}
+                          <strong className="text-[#0A2858]">
+                            {skill.trend === "up" ? "↑ Rising" : skill.trend === "down" ? "↓ Declining" : "→ Steady"}
+                          </strong>
+                        </span>
+                        {skill.prerequisites?.length > 0 && (
+                          <span>Requires: {skill.prerequisites.length} prior</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </NeoCard>
 
           {/* AI Misconception Detector Feed */}
