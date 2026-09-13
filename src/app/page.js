@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import AppLayout from "../components/layout/AppLayout";
+import LandingPage from "../components/landing/LandingPage";
 import StudentDashboard from "../components/dashboard/StudentDashboard";
 import LearningIntelligenceHub from "../components/intelligence/LearningIntelligenceHub";
 import AssessmentView from "../components/assessment/AssessmentView";
@@ -11,12 +12,31 @@ import CareerSkillsView from "../components/career/CareerSkillsView";
 import TeacherDashboard from "../components/teacher/TeacherDashboard";
 import InterventionQueue from "../components/teacher/InterventionQueue";
 import TeacherToolsView from "../components/teacher/TeacherToolsView";
+import ProductTourModal from "../components/common/ProductTourModal";
+import { storageService } from "../lib/storage";
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState("student_dashboard");
+  const [activeSection, setActiveSection] = useState("landing_page");
+  const [tourOpen, setTourOpen] = useState(false);
+
+  const handleRoleChange = (isTeacher) => {
+    if (isTeacher) {
+      storageService.setCurrentUser("uid_sharma");
+    } else {
+      storageService.setCurrentUser("uid_rahul");
+    }
+  };
 
   const renderSection = () => {
     switch (activeSection) {
+      case "landing_page":
+        return (
+          <LandingPage
+            onNavigate={setActiveSection}
+            onRoleChange={handleRoleChange}
+            onOpenTour={() => setTourOpen(true)}
+          />
+        );
       case "student_dashboard":
         return <StudentDashboard onNavigate={setActiveSection} />;
       case "learning_intelligence":
@@ -43,8 +63,19 @@ export default function Home() {
   };
 
   return (
-    <AppLayout activeSection={activeSection} onSectionChange={setActiveSection}>
+    <AppLayout
+      activeSection={activeSection}
+      onSectionChange={setActiveSection}
+      onOpenTour={() => setTourOpen(true)}
+    >
       {renderSection()}
+      <ProductTourModal
+        isOpen={tourOpen}
+        onClose={() => setTourOpen(false)}
+        onNavigate={setActiveSection}
+        onRoleChange={handleRoleChange}
+      />
     </AppLayout>
   );
 }
+
