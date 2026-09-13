@@ -40,6 +40,8 @@ function getInitialState() {
       uid_rahul: { ...INITIAL_CAREER_GOAL },
     },
     interventions: [...INITIAL_INTERVENTIONS],
+    activeDoubt: null,
+    customRoadmaps: {},
     theme: "light",
   };
 }
@@ -225,6 +227,21 @@ class StorageService {
     }
   }
 
+  // --- Active Assessment Doubt (Question Context for AI Tutor) ---
+  getActiveDoubt() {
+    return this.state.activeDoubt || null;
+  }
+
+  setActiveDoubt(doubtContext) {
+    this.state.activeDoubt = doubtContext;
+    this.saveToStorage();
+  }
+
+  clearActiveDoubt() {
+    this.state.activeDoubt = null;
+    this.saveToStorage();
+  }
+
   // --- Learning Plans ---
   getLearningPlan(uid = "uid_rahul") {
     return this.state.learningPlans[uid] || null;
@@ -239,7 +256,42 @@ class StorageService {
     this.saveToStorage();
   }
 
-  // --- Career Goals ---
+  addTaskToLearningPlan(uid, task) {
+    const current = this.state.learningPlans[uid] || { tasks: [] };
+    const newTask = {
+      id: `task_${Date.now()}`,
+      status: "pending",
+      allocatedMinutes: 30,
+      priority: "medium",
+      ...task,
+    };
+    current.tasks = [newTask, ...(current.tasks || [])];
+    this.saveLearningPlan(uid, current);
+    return newTask;
+  }
+
+  updateLearningPlanTask(uid, taskId, updates) {
+    const current = this.state.learningPlans[uid];
+    if (current && current.tasks) {
+      current.tasks = current.tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t));
+      this.saveLearningPlan(uid, current);
+    }
+  }
+
+  deleteLearningPlanTask(uid, taskId) {
+    const current = this.state.learningPlans[uid];
+    if (current && current.tasks) {
+      current.tasks = current.tasks.filter((t) => t.id !== taskId);
+      this.saveLearningPlan(uid, current);
+    }
+  }
+
+  resetLearningPlanToDefault(uid = "uid_rahul") {
+    this.state.learningPlans[uid] = { ...INITIAL_LEARNING_PLAN };
+    this.saveToStorage();
+  }
+
+  // --- Career Goals & Custom Roadmaps ---
   getCareerGoal(uid = "uid_rahul") {
     return this.state.careerGoals[uid] || null;
   }
@@ -249,6 +301,21 @@ class StorageService {
       ...this.state.careerGoals[uid],
       ...goal,
     };
+    this.saveToStorage();
+  }
+
+  getCustomCareerRoadmaps(uid = "uid_rahul") {
+    return this.state.customRoadmaps?.[uid] || [];
+  }
+
+  saveCustomCareerRoadmap(uid, roadmap) {
+    if (!this.state.customRoadmaps) this.state.customRoadmaps = {};
+    if (!this.state.customRoadmaps[uid]) this.state.customRoadmaps[uid] = [];
+    this.state.customRoadmaps[uid].unshift({
+      id: `roadmap_${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      ...roadmap,
+    });
     this.saveToStorage();
   }
 

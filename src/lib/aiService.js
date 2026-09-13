@@ -277,3 +277,146 @@ export async function optimizeExamPrep({ syllabus = [], examDate = "2026-10-30",
     return { ...fallback, source: "deterministic_fallback" };
   }
 }
+
+/**
+ * 8. Assessment Doubt Resolution & Socratic Explanation
+ */
+export async function explainAssessmentDoubt({ questionText, studentAnswer, correctAnswer, detectedMisconception, skillId }) {
+  const systemPrompt = `You are a patient Socratic Computer Science Mentor for EduRaahi. A student took a test and is confused about why their answer was incorrect.
+Explain:
+1) The mental misconception that led to selecting the wrong answer.
+2) The underlying mathematical or algorithmic invariant.
+3) A 1-sentence Socratic reflection prompt to help them verify the correct concept without simply giving away test points.
+Return ONLY JSON matching schema: { "misconceptionExplanation": string, "invariantPrinciple": string, "socraticReflection": string, "analogousHint": string }.`;
+
+  const userPrompt = JSON.stringify({ questionText, studentAnswer, correctAnswer, detectedMisconception, skillId });
+
+  const fallback = {
+    misconceptionExplanation: detectedMisconception || "You may have processed nodes in the order they were encountered (pre-order) rather than waiting for left subtree elements to unwind in sorted order (in-order).",
+    invariantPrinciple: "In a Binary Search Tree, an In-Order traversal (Left -> Node -> Right) visits keys in strictly non-decreasing sorted order.",
+    socraticReflection: "If you draw a small 3-node BST with root 5, left 2, and right 8, what sequence produces 2, 5, 8?",
+    analogousHint: "Think of looking up words in a dictionary: you finish all words starting with 'A' before moving on to 'B'.",
+  };
+
+  try {
+    const raw = await callGeminiRaw(systemPrompt, userPrompt);
+    if (raw && raw.misconceptionExplanation) return { ...raw, source: "gemini" };
+    return { ...fallback, source: "deterministic_fallback" };
+  } catch (e) {
+    return { ...fallback, source: "deterministic_fallback" };
+  }
+}
+
+/**
+ * 9. Custom Career Path & Domain Roadmap Generator
+ */
+export async function generateCustomCareerRoadmap({ targetRole, targetDomain, studentSkills = [], timeline = "6 Months" }) {
+  const systemPrompt = `You are an expert technical career architect for engineering students.
+Given a student's desired target role and domain/industry, generate a personalized 4-phase preparation roadmap, required competencies, readiness match %, and a recommended domain capstone project.
+Return ONLY JSON matching schema:
+{
+  "roleTitle": string,
+  "domain": string,
+  "matchPercentage": number,
+  "readinessSummary": string,
+  "phases": [
+    { "phase": number, "title": string, "duration": string, "milestones": string[], "keySkills": string[] }
+  ],
+  "capstoneProject": { "title": string, "description": string, "techStack": string[] }
+}`;
+
+  const userPrompt = JSON.stringify({ targetRole, targetDomain, studentSkills, timeline });
+
+  const fallback = {
+    roleTitle: targetRole || "Cloud & DevOps Reliability Engineer",
+    domain: targetDomain || "Fintech Infrastructure",
+    matchPercentage: 64,
+    readinessSummary: `Solid foundation in Data Structures (Arrays 85%, Strings 74%). Next milestone is mastering distributed system invariants, container orchestration, and CI/CD pipelines.`,
+    phases: [
+      {
+        phase: 1,
+        title: "Algorithmic Fundamentals & Linux Internals",
+        duration: "Weeks 1–4",
+        milestones: ["Time & Space Complexity mastery", "Linux Shell scripting & process lifecycle", "Networking basics (TCP/IP, HTTP/3, DNS)"],
+        keySkills: ["Complexity Analysis", "Bash / POSIX", "Networking"],
+      },
+      {
+        phase: 2,
+        title: "System Architecture & Containerization",
+        duration: "Weeks 5–10",
+        milestones: ["Docker containerization & multi-stage builds", "Kubernetes pods, services, ingress & configmaps", "Microservice communication protocols"],
+        keySkills: ["Docker", "Kubernetes", "gRPC / REST"],
+      },
+      {
+        phase: 3,
+        title: "Infrastructure as Code & Observability",
+        duration: "Weeks 11–16",
+        milestones: ["Terraform declarative provisioning", "Prometheus & Grafana metric telemetry", "Distributed tracing with OpenTelemetry"],
+        keySkills: ["Terraform", "Prometheus", "CI/CD Pipelines"],
+      },
+      {
+        phase: 4,
+        title: "Placement Sprint & Production Capstone",
+        duration: "Weeks 17–24",
+        milestones: ["Deploy high-availability fintech settlement simulator", "Conduct 5 mock technical interview vivas", "Resume claimed vs demonstrated skill audit"],
+        keySkills: ["Mock Vivas", "System Design", "Production Deployments"],
+      },
+    ],
+    capstoneProject: {
+      title: `${targetDomain || "Fintech"} Real-Time Resilient Event Streamer`,
+      description: `Build a distributed transaction processor that handles 10,000 req/sec with automatic failover, canary deployments, and Prometheus telemetry dashboards.`,
+      techStack: ["Go / Node.js", "Docker", "Kubernetes", "Kafka", "Prometheus"],
+    },
+  };
+
+  try {
+    const raw = await callGeminiRaw(systemPrompt, userPrompt);
+    if (raw && raw.phases && raw.phases.length > 0) return { ...raw, source: "gemini" };
+    return { ...fallback, source: "deterministic_fallback" };
+  } catch (e) {
+    return { ...fallback, source: "deterministic_fallback" };
+  }
+}
+
+/**
+ * 10. Interactive Career Counseling Interview Step
+ */
+export async function careerCounselorStep({ message, step = 1, conversationHistory = [] }) {
+  const systemPrompt = `You are an empathetic, insightful Career Counselor for university engineering students.
+Guide the student through an interactive 3-question discovery to pinpoint their ideal tech career path:
+- Step 1: Discover technical interests (e.g. backend systems, AI/ML, fullstack, DevOps/cloud, cybersecurity).
+- Step 2: Discover target domain (e.g. fintech, healthtech, high-scale consumer apps, AI startups).
+- Step 3: Recommend the top 2 matching careers, explain why they fit, and prompt them to generate their personalized roadmap.
+Always return JSON: { "reply": string, "nextStep": number, "recommendedRole": string|null, "suggestedOptions": string[] }.`;
+
+  const userPrompt = JSON.stringify({ message, step, conversationHistory });
+
+  const defaultReplies = {
+    1: {
+      reply: "Welcome to Career Counseling! To find the career path that best matches your brain and ambitions, tell me: what kind of problems excite you most? Do you enjoy crafting beautiful user experiences, designing resilient backend APIs, training AI models, or building automated cloud systems?",
+      nextStep: 2,
+      recommendedRole: null,
+      suggestedOptions: ["Backend & Distributed Systems", "AI & Machine Learning", "Full-Stack Web & Mobile", "Cloud Infrastructure & DevOps"],
+    },
+    2: {
+      reply: "Great choice! Now, what industry or domain would you love to work in? For instance, does High-Frequency Fintech, Healthcare Tech, AI Product Startups, or Autonomous Systems appeal to you most?",
+      nextStep: 3,
+      recommendedRole: null,
+      suggestedOptions: ["Fintech & Trading Systems", "HealthTech & Bio-Informatics", "AI & Robotics Startups", "Enterprise Cloud & SaaS"],
+    },
+    3: {
+      reply: "Based on our counseling conversation and your strong analytical aptitude in Data Structures (Arrays 85%, Strings 74%), your top recommended path is **Backend & Distributed Systems Engineer**! You have the exact problem-solving foundation required to excel in scalable distributed architectures. Would you like me to generate and apply your personalized 4-phase preparation roadmap now?",
+      nextStep: 4,
+      recommendedRole: "Backend & Distributed Systems Engineer",
+      suggestedOptions: ["Yes, Generate & Apply Roadmap!", "Tell me more about required skills", "Explore alternative: Cloud & DevOps"],
+    },
+  };
+
+  try {
+    const raw = await callGeminiRaw(systemPrompt, userPrompt);
+    if (raw && raw.reply) return { ...raw, source: "gemini" };
+    return defaultReplies[step] || defaultReplies[3];
+  } catch (e) {
+    return defaultReplies[step] || defaultReplies[3];
+  }
+}

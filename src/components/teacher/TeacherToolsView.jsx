@@ -157,7 +157,7 @@ export default function TeacherToolsView({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#0A2858] text-white px-2 py-0.5 rounded-xs">
-              Screen T06 • T07 • T08
+              Authoring & Grading
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               Teacher Authoring & Evaluation Suite
@@ -178,7 +178,7 @@ export default function TeacherToolsView({ onNavigate }) {
                 : "bg-white text-[#0A2858] border-[#0A2858]"
             }`}
           >
-            Assessment Builder (T06)
+            Assessment Builder
           </button>
           <button
             onClick={() => setActiveTab("feedback")}
@@ -188,7 +188,7 @@ export default function TeacherToolsView({ onNavigate }) {
                 : "bg-white text-[#0A2858] border-[#0A2858]"
             }`}
           >
-            Assignment Feedback (T07)
+            Assignment Feedback
           </button>
           <button
             onClick={() => setActiveTab("content")}
@@ -198,7 +198,7 @@ export default function TeacherToolsView({ onNavigate }) {
                 : "bg-white text-[#0A2858] border-[#0A2858]"
             }`}
           >
-            Content Assistant (T08)
+            Content Assistant
           </button>
         </div>
       </div>
@@ -327,7 +327,7 @@ export default function TeacherToolsView({ onNavigate }) {
             <div className="flex items-center justify-between border-b-2 border-[#DDE7F5] pb-3 mb-4">
               <div>
                 <h3 className="font-heading font-extrabold text-lg text-[#0A2858]">
-                  Screen T07 • AI Rubric Evaluation & Feedback Assistant
+                  AI Rubric Evaluation & Feedback Assistant
                 </h3>
                 <p className="font-body text-xs text-[#55729D]">
                   Assisted evaluation of student submissions against rubric with complete teacher override.

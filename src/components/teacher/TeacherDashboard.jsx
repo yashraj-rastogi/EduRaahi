@@ -27,7 +27,7 @@ export default function TeacherDashboard({ onNavigate }) {
   const [classHeatmap, setClassHeatmap] = useState([]);
   const [interventions, setInterventions] = useState([]);
   const [users, setUsers] = useState({});
-  const [selectedStudent, setSelectedStudent] = useState(null); // Screen T04 Student Profile drill-down
+  const [selectedStudent, setSelectedStudent] = useState(null); // Student Profile drill-down
 
   useEffect(() => {
     const update = () => {
@@ -69,7 +69,7 @@ export default function TeacherDashboard({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#0A2858] text-white px-2 py-0.5 rounded-xs">
-              Screen T01 • T02 • T04
+              Faculty Command Console
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               Class 3A — Learning Analytics & Intervention Command
@@ -126,14 +126,14 @@ export default function TeacherDashboard({ onNavigate }) {
 
       {/* Main Teacher Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Col 1 & 2: Screen T02 Class Skill Analytics Heatmap */}
+        {/* Col 1 & 2: Class Skill Analytics Heatmap */}
         <div className="lg:col-span-2 space-y-6">
           <NeoCard variant="default" shadow="md">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Layers className="w-5 h-5 text-[#1867E8]" />
                 <h3 className="font-heading font-bold text-base text-[#0A2858] uppercase tracking-wide">
-                  Screen T02 • Class Skill Mastery Heatmap
+                  Class Skill Mastery Heatmap
                 </h3>
               </div>
               <NeoBadge variant="critical">Trees & Recursion Flagged</NeoBadge>
@@ -167,7 +167,7 @@ export default function TeacherDashboard({ onNavigate }) {
                     showPercentage={false}
                   />
 
-                  {/* Student Chip Breakdown with Click to Inspect (T04) */}
+                  {/* Student Chip Breakdown with Click to Inspect */}
                   <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#DDE7F5] text-xs font-mono">
                     <span className="text-[#8298BA] font-bold">Students (Click to Inspect):</span>
                     {item.students.map((st) => (
@@ -209,10 +209,10 @@ export default function TeacherDashboard({ onNavigate }) {
 
         {/* Col 3: Student Roster & Pending Interventions Preview */}
         <div className="space-y-4">
-          {/* Student Roster Card (T04 Entry Points) */}
+          {/* Student Roster Card */}
           <NeoCard variant="default" shadow="sm">
             <h4 className="font-heading font-bold text-sm uppercase tracking-wide text-[#0A2858] mb-3">
-              Screen T04 • Student Intelligence Roster
+              Student Intelligence Roster
             </h4>
             <div className="space-y-2">
               {studentRoster.map((st) => (
@@ -244,7 +244,7 @@ export default function TeacherDashboard({ onNavigate }) {
           <NeoCard variant="default" shadow="md" className="border-[3px] border-[#0A2858]">
             <div className="flex items-center justify-between mb-3 border-b-2 border-[#0A2858] pb-2">
               <span className="font-mono text-xs font-bold uppercase text-[#1867E8]">
-                Screen T03 • Priority Queue
+                Intervention Priority Queue
               </span>
               <span className="font-mono text-xs font-bold text-[#DC2626]">
                 Action Needed
@@ -286,7 +286,7 @@ export default function TeacherDashboard({ onNavigate }) {
         </div>
       </div>
 
-      {/* Screen T04: Student Intelligence Profile Modal */}
+      {/* Student Intelligence Profile Modal */}
       {selectedStudent && (
         <div className="fixed inset-0 z-50 bg-[#0A2858]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
           <NeoCard
@@ -301,7 +301,7 @@ export default function TeacherDashboard({ onNavigate }) {
                 </div>
                 <div>
                   <span className="font-mono text-xs font-bold uppercase text-[#1867E8]">
-                    Screen T04 • Student Intelligence Profile
+                    Student Profile Overview
                   </span>
                   <h3 className="font-heading font-extrabold text-xl text-[#0A2858]">
                     {selectedStudent.name}

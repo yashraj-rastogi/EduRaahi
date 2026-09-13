@@ -72,7 +72,7 @@ export default function InterventionQueue({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#0A2858] text-white px-2 py-0.5 rounded-xs">
-              Screen T03 • T05
+              Human-in-the-Loop Governance
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               At-Risk & Intervention Review Queue
@@ -165,7 +165,7 @@ export default function InterventionQueue({ onNavigate }) {
         ))}
       </div>
 
-      {/* Screen T05: Review & Human-in-the-Loop Modal */}
+      {/* Faculty Review & Dispatch Modal */}
       {activeIntervention && (
         <div className="fixed inset-0 z-50 bg-[#0A2858]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
           <NeoCard
@@ -176,7 +176,7 @@ export default function InterventionQueue({ onNavigate }) {
             <div className="flex items-center justify-between border-b-2 border-[#0A2858] pb-3">
               <div>
                 <span className="font-mono text-xs font-bold uppercase text-[#1867E8]">
-                  Screen T05 • Human-in-the-Loop Review
+                  Faculty Review & Dispatch Console
                 </span>
                 <h3 className="font-heading font-extrabold text-xl text-[#0A2858]">
                   Intervention Plan for {activeIntervention.studentName}

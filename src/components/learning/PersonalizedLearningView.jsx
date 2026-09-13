@@ -11,6 +11,11 @@ import {
   FolderGit2,
   Clock,
   Languages,
+  Plus,
+  Trash2,
+  Edit3,
+  Sliders,
+  RotateCcw,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
@@ -23,6 +28,13 @@ export default function PersonalizedLearningView({ onNavigate }) {
   const [activeTab, setActiveTab] = useState("plan"); // 'plan' | 'material' | 'exam' | 'projects'
   const [learningPlan, setLearningPlan] = useState(storageService.getLearningPlan("uid_rahul"));
   const [skills, setSkills] = useState(storageService.getStudentSkills("uid_rahul"));
+
+  // Manual Study Plan Editing State
+  const [isEditingPlan, setIsEditingPlan] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskSkill, setNewTaskSkill] = useState("skill_trees");
+  const [newTaskMinutes, setNewTaskMinutes] = useState(30);
+  const [newTaskPriority, setNewTaskPriority] = useState("high");
 
   // Personalizer State
   const [concept, setConcept] = useState("Tree Traversal & BST");
@@ -46,7 +58,7 @@ export default function PersonalizedLearningView({ onNavigate }) {
   }, []);
 
   const handleToggleTask = (taskId) => {
-    if (!learningPlan) return;
+    if (!learningPlan || isEditingPlan) return;
     const updatedTasks = learningPlan.tasks.map((t) => {
       if (t.id === taskId) {
         return { ...t, status: t.status === "done" ? "pending" : "done" };
@@ -57,6 +69,43 @@ export default function PersonalizedLearningView({ onNavigate }) {
       ...learningPlan,
       tasks: updatedTasks,
     });
+  };
+
+  const handleAddTask = (e) => {
+    e.preventDefault();
+    if (!newTaskTitle.trim()) return;
+    storageService.addTaskToLearningPlan("uid_rahul", {
+      title: newTaskTitle.trim(),
+      skillId: newTaskSkill,
+      allocatedMinutes: Number(newTaskMinutes) || 30,
+      priority: newTaskPriority,
+    });
+    setNewTaskTitle("");
+    setNewTaskMinutes(30);
+  };
+
+  const handleDeleteTask = (taskId, e) => {
+    e.stopPropagation();
+    storageService.deleteLearningPlanTask("uid_rahul", taskId);
+  };
+
+  const handleAdjustMinutes = (taskId, currentMins, delta, e) => {
+    e.stopPropagation();
+    const newMins = Math.max(10, currentMins + delta);
+    storageService.updateLearningPlanTask("uid_rahul", taskId, { allocatedMinutes: newMins });
+  };
+
+  const handleAdjustBudget = (hours) => {
+    if (!learningPlan) return;
+    storageService.saveLearningPlan("uid_rahul", {
+      ...learningPlan,
+      availableHoursPerWeek: Number(hours),
+    });
+  };
+
+  const handleResetPlan = () => {
+    storageService.resetLearningPlanToDefault("uid_rahul");
+    setIsEditingPlan(false);
   };
 
   const handleGenerateMaterial = async () => {
@@ -89,12 +138,12 @@ export default function PersonalizedLearningView({ onNavigate }) {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto animate-fade-in">
-      {/* Header */}
+      {/* Cockpit Banner */}
       <div className="bg-white border-[2px] border-[#0A2858] p-5 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2 py-0.5 border border-[#0A2858] rounded-xs">
-              Category 2 • Personalized Learning
+              Adaptive Learning
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               Adaptive Learning & Material Suite
@@ -108,10 +157,10 @@ export default function PersonalizedLearningView({ onNavigate }) {
         {/* Tab Switcher */}
         <div className="flex flex-wrap items-center gap-2">
           {[
-            { id: "plan", label: "Study Plan (S07)", icon: Calendar },
-            { id: "material", label: "Personalizer (S08)", icon: BookOpen },
-            { id: "exam", label: "Exam Prep (S11)", icon: Target },
-            { id: "projects", label: "Projects (S10)", icon: FolderGit2 },
+            { id: "plan", label: "Study Plan", icon: Calendar },
+            { id: "material", label: "Material Personalizer", icon: BookOpen },
+            { id: "exam", label: "Exam Prep", icon: Target },
+            { id: "projects", label: "Project Lab", icon: FolderGit2 },
           ].map((t) => {
             const Icon = t.icon;
             const isActive = activeTab === t.id;
@@ -133,11 +182,11 @@ export default function PersonalizedLearningView({ onNavigate }) {
         </div>
       </div>
 
-      {/* TAB 1: S07 ADAPTIVE STUDY PLAN */}
+      {/* TAB 1: ADAPTIVE STUDY PLAN */}
       {activeTab === "plan" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-[#DDE7F5] pb-3 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-[#DDE7F5] pb-3 mb-4">
               <div>
                 <h3 className="font-heading font-extrabold text-lg text-[#0A2858]">
                   Weekly Adaptive Learning Schedule
@@ -146,12 +195,98 @@ export default function PersonalizedLearningView({ onNavigate }) {
                   Goal: {learningPlan?.goal} • Budget: {learningPlan?.availableHoursPerWeek} Hours/Week
                 </p>
               </div>
-              <NeoBadge variant="accent">
-                Last Recalculated: Today
-              </NeoBadge>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsEditingPlan(!isEditingPlan)}
+                  className={`btn text-xs px-3 py-1.5 flex items-center gap-1.5 ${
+                    isEditingPlan
+                      ? "bg-[#16A34A] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
+                      : "btn-primary"
+                  }`}
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>{isEditingPlan ? "Done Customizing" : "Customize Schedule"}</span>
+                </button>
+                <button
+                  onClick={handleResetPlan}
+                  className="btn btn-secondary text-xs px-2.5 py-1.5 text-[#55729D] hover:text-[#DC2626]"
+                  title="Reset to initial AI-generated baseline plan"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Reset</span>
+                </button>
+              </div>
             </div>
 
-            {learningPlan?.changeReason && (
+            {/* Editing Controls Banner */}
+            {isEditingPlan && (
+              <div className="p-4 bg-[#EAF2FF] border-[2px] border-[#0A2858] rounded-sm mb-4 space-y-4 animate-fade-in shadow-[2px_2px_0px_#0A2858]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-[#1867E8]" />
+                    <span className="font-heading font-bold text-xs uppercase text-[#0A2858]">
+                      Custom Study Plan Controls
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold">
+                    <span>Weekly Budget:</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="40"
+                      value={learningPlan?.availableHoursPerWeek || 6}
+                      onChange={(e) => handleAdjustBudget(e.target.value)}
+                      className="w-16 px-2 py-1 bg-white border border-[#0A2858] rounded-xs font-mono text-xs text-center"
+                    />
+                    <span>hrs/wk</span>
+                  </div>
+                </div>
+
+                {/* Add New Task Form */}
+                <form onSubmit={handleAddTask} className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-2 border-t border-[#0A2858]/20">
+                  <input
+                    type="text"
+                    placeholder="Task Title (e.g. BST Balancing Practice)"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    className="sm:col-span-2 px-3 py-1.5 bg-white border border-[#0A2858] rounded-xs text-xs font-body"
+                    required
+                  />
+                  <select
+                    value={newTaskSkill}
+                    onChange={(e) => setNewTaskSkill(e.target.value)}
+                    className="px-2 py-1.5 bg-white border border-[#0A2858] rounded-xs text-xs font-mono"
+                  >
+                    <option value="skill_arrays">Arrays</option>
+                    <option value="skill_strings">Strings</option>
+                    <option value="skill_complexity">Complexity</option>
+                    <option value="skill_recursion">Recursion</option>
+                    <option value="skill_trees">Trees</option>
+                    <option value="skill_graphs">Graphs</option>
+                  </select>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="5"
+                      step="5"
+                      value={newTaskMinutes}
+                      onChange={(e) => setNewTaskMinutes(e.target.value)}
+                      className="w-16 px-2 py-1.5 bg-white border border-[#0A2858] rounded-xs text-xs font-mono text-center"
+                    />
+                    <span className="text-[11px] font-mono text-[#55729D]">mins</span>
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-xs py-1.5 flex items-center justify-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Task</span>
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {learningPlan?.changeReason && !isEditingPlan && (
               <div className="p-3 bg-[#F0FDF4] border-[1.5px] border-[#16A34A] rounded-sm text-xs font-mono text-[#16A34A] mb-4 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 shrink-0" />
                 <span>Plan adapted: {learningPlan.changeReason}</span>
@@ -163,11 +298,11 @@ export default function PersonalizedLearningView({ onNavigate }) {
                 <div
                   key={task.id}
                   onClick={() => handleToggleTask(task.id)}
-                  className={`p-3.5 border-[2px] rounded-sm flex items-center justify-between cursor-pointer transition-all ${
+                  className={`p-3.5 border-[2px] rounded-sm flex items-center justify-between transition-all ${
                     task.status === "done"
                       ? "bg-[#F4F8FF] border-[#8298BA] opacity-75"
                       : "bg-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858] hover:bg-[#EAF2FF]"
-                  }`}
+                  } ${isEditingPlan ? "cursor-default" : "cursor-pointer"}`}
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -191,8 +326,39 @@ export default function PersonalizedLearningView({ onNavigate }) {
                     </div>
                   </div>
 
-                  <div className="font-mono text-xs font-bold text-[#0A2858] bg-[#EAF2FF] border border-[#0A2858] px-2.5 py-1 rounded-sm">
-                    {task.allocatedMinutes} Mins
+                  <div className="flex items-center gap-2">
+                    {isEditingPlan ? (
+                      <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={(e) => handleAdjustMinutes(task.id, task.allocatedMinutes, -15, e)}
+                          className="w-6 h-6 bg-white border border-[#0A2858] rounded-xs font-mono text-xs font-bold hover:bg-[#DDE7F5]"
+                          title="Reduce 15 mins"
+                        >
+                          -
+                        </button>
+                        <span className="font-mono text-xs font-bold text-[#0A2858] px-1.5">
+                          {task.allocatedMinutes}m
+                        </span>
+                        <button
+                          onClick={(e) => handleAdjustMinutes(task.id, task.allocatedMinutes, 15, e)}
+                          className="w-6 h-6 bg-white border border-[#0A2858] rounded-xs font-mono text-xs font-bold hover:bg-[#DDE7F5]"
+                          title="Add 15 mins"
+                        >
+                          +
+                        </button>
+                        <button
+                          onClick={(e) => handleDeleteTask(task.id, e)}
+                          className="w-7 h-7 bg-[#FEE2E2] border border-[#DC2626] text-[#DC2626] rounded-xs flex items-center justify-center hover:bg-[#FCA5A5] ml-1"
+                          title="Delete task"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="font-mono text-xs font-bold text-[#0A2858] bg-[#EAF2FF] border border-[#0A2858] px-2.5 py-1 rounded-sm">
+                        {task.allocatedMinutes} Mins
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

@@ -41,7 +41,7 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
 
   const features = {
     learner: {
-      title: "Learner Intelligence Cockpit (S01, S02, S03)",
+      title: "Learner Intelligence Cockpit",
       badge: "Core Learner Model",
       description:
         "Answers the 6 core questions every student needs: Where do I stand? What are my weak spots? Why am I wrong? What should I learn next? How does my study plan adapt? How prepared am I for technical placements?",
@@ -54,7 +54,7 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
       targetRole: false,
     },
     assessment: {
-      title: "Diagnostic Assessment & The +34% Leap (S04, S05, S06)",
+      title: "Diagnostic Assessment & The +34% Leap",
       badge: "Measurable Proof of Learning",
       description:
         "Say goodbye to meaningless multiple-choice percentages. EduRaahi breaks test performance down by granular sub-skills and demonstrates a verifiable mastery climb.",
@@ -67,7 +67,7 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
       targetRole: false,
     },
     socratic: {
-      title: "Guided Socratic AI Tutor (S09)",
+      title: "Guided Socratic AI Tutor",
       badge: "Pedagogical Guardrail",
       description:
         "Generic chatbots immediately dump the final code, destroying genuine problem-solving ability. EduRaahi enforces a strict 5-stage hint ladder with comprehension checks.",
@@ -80,7 +80,7 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
       targetRole: false,
     },
     teacher: {
-      title: "Teacher Cohort Heatmap & Interventions (T01–T08)",
+      title: "Teacher Cohort Heatmap & Interventions",
       badge: "Human-in-the-Loop Governance",
       description:
         "Gives instructors super-human visibility across 60–120 students, highlighting class-wide bottlenecks and automating personalized intervention proposals.",
@@ -88,13 +88,13 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
         "Real-time Cohort Heatmap exposing that Trees (44% avg) is the class bottleneck, while celebrating Rahul's +34% jump.",
         "Prioritized Intervention Queue flagging at-risk students (Aman, Sneha).",
         "Human Review & Edit Modal: teachers review, modify, and authorize all pedagogical actions before delivery.",
-        "AI Assessment Builder (T06), Rubric Evaluator (T07), and Lesson Assistant (T08).",
+        "AI Assessment Builder, Rubric Evaluator, and Lesson Assistant.",
       ],
       targetScreen: "teacher_dashboard",
       targetRole: true,
     },
     career: {
-      title: "Placement Navigator & Resume Audit (S14–S17)",
+      title: "Placement Navigator & Resume Audit",
       badge: "Employability Alignment",
       description:
         "Directly connects classroom algorithms to campus placements, eradicating the gap between resume buzzwords and proven technical competency.",
@@ -121,10 +121,10 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
               <Zap className="w-3.5 h-3.5 fill-[#1867E8]" />
               Lenovo LEAP Hackathon 2026 • AI in Education & Skilling Track
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold bg-[#DCFCE7] text-[#16A34A] border-[1.5px] border-[#0A2858] rounded-sm">
+            {/* <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold bg-[#DCFCE7] text-[#16A34A] border-[1.5px] border-[#0A2858] rounded-sm">
               <CheckCircle2 className="w-3.5 h-3.5" />
               All 22 Problems Implemented
-            </span>
+            </span> */}
           </div>
 
           {/* Headline & Logo */}
@@ -301,7 +301,7 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
         <div className="space-y-2 mb-6">
           <div className="flex items-center gap-2">
             <NeoBadge variant="accent">Core Architectural Innovation</NeoBadge>
-            <span className="font-mono text-xs text-[#8298BA]">P01 – P05, P19 – P21</span>
+            <span className="font-mono text-xs text-[#8298BA]">Continuous Feedback Engine</span>
           </div>
           <h2 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
             The Continuous Closed Intelligence Loop
@@ -370,18 +370,18 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
             Explore EduRaahi Feature Consoles
           </h2>
           <p className="font-body text-sm text-[#55729D]">
-            Select an operational module to see how it solves the 22 competition problems in production:
+            Select an operational module to see how it solves core education & skilling challenges:
           </p>
         </div>
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 border-b-[2px] border-[#0A2858] pb-3">
           {[
-            { id: "learner", label: "Learner Cockpit (S01–S03)", icon: Brain },
-            { id: "assessment", label: "Diagnostic & +34% Leap (S04–S06)", icon: Target },
-            { id: "socratic", label: "Socratic AI Tutor (S09)", icon: Sparkles },
-            { id: "teacher", label: "Teacher Console (T01–T08)", icon: GraduationCap },
-            { id: "career", label: "Career & Resume Audit (S14–S17)", icon: Briefcase },
+            { id: "learner", label: "Learner Cockpit", icon: Brain },
+            { id: "assessment", label: "Diagnostic & Practice", icon: Target },
+            { id: "socratic", label: "Socratic AI Tutor", icon: Sparkles },
+            { id: "teacher", label: "Teacher Console", icon: GraduationCap },
+            { id: "career", label: "Career & Resume Audit", icon: Briefcase },
           ].map((tab) => {
             const TabIcon = tab.icon;
             const isActive = activeTab === tab.id;

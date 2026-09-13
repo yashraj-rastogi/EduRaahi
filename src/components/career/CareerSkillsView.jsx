@@ -14,23 +14,36 @@ import {
   TrendingUp,
   ShieldCheck,
   Compass,
+  MessageSquare,
+  Clock,
+  Layers,
+  Check,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
 import NeoBadge from "../common/NeoBadge";
 import NeoProgressBar from "../common/NeoProgressBar";
 import { storageService } from "../../lib/storage";
+import { generateCustomCareerRoadmap } from "../../lib/aiService";
 
 export default function CareerSkillsView({ onNavigate }) {
   const [activeTab, setActiveTab] = useState("navigator"); // 'navigator' | 'map' | 'resume' | 'projects' | 'viva'
   const [careerGoal, setCareerGoal] = useState(storageService.getCareerGoal("uid_rahul"));
   const [skills, setSkills] = useState(storageService.getStudentSkills("uid_rahul"));
 
+  // Custom Career Path Generator State
+  const [customRole, setCustomRole] = useState("Cloud DevOps & Site Reliability Engineer");
+  const [customDomain, setCustomDomain] = useState("Fintech & Distributed Payment Gateways");
+  const [customTimeline, setCustomTimeline] = useState("6 months");
+  const [isGeneratingRoadmap, setIsGeneratingRoadmap] = useState(false);
+  const [customRoadmapResult, setCustomRoadmapResult] = useState(null);
+  const [goalAppliedToast, setGoalAppliedToast] = useState(false);
+
   // Resume State
   const [resumeText, setResumeText] = useState("");
   const [resumeAnalysis, setResumeAnalysis] = useState(null);
 
-  // Projects State (P18)
+  // Projects State
   const [projects, setProjects] = useState([
     {
       id: "proj_1",
@@ -61,7 +74,7 @@ export default function CareerSkillsView({ onNavigate }) {
     },
   ]);
 
-  // Viva State (P13)
+  // Viva State
   const [vivaStep, setVivaStep] = useState(1);
   const [vivaAnswer, setVivaAnswer] = useState("");
   const [vivaReport, setVivaReport] = useState(null);
@@ -73,6 +86,64 @@ export default function CareerSkillsView({ onNavigate }) {
     });
     return unsub;
   }, []);
+
+  const handleGenerateCustomRoadmap = async () => {
+    if (!customRole.trim() || !customDomain.trim()) return;
+    setIsGeneratingRoadmap(true);
+    setGoalAppliedToast(false);
+
+    try {
+      const studentSkills = storageService.getStudentSkills("uid_rahul");
+      const result = await generateCustomCareerRoadmap({
+        targetRole: customRole,
+        targetDomain: customDomain,
+        studentSkills,
+        timeline: customTimeline,
+      });
+
+      setCustomRoadmapResult(result);
+    } catch (err) {
+      console.error("Roadmap generation error:", err);
+    } finally {
+      setIsGeneratingRoadmap(false);
+    }
+  };
+
+  const handleApplyCustomRoadmap = (roadmapData) => {
+    const uid = storageService.getCurrentUser().id;
+
+    // Construct benchmarks from roadmap gaps or realistic default requirements
+    const benchmarks = [
+      { skill: "Core Data Structures & Algorithms", current: 78, required: 85 },
+      { skill: `${roadmapData.targetDomain} Tooling`, current: 52, required: 80 },
+      { skill: `${roadmapData.targetRole} Architecture`, current: 48, required: 85 },
+      { skill: "Testing & Production Observability", current: 60, required: 80 },
+    ];
+
+    const newGoal = {
+      targetRole: roadmapData.targetRole,
+      targetDomain: roadmapData.targetDomain,
+      readinessScore: roadmapData.estimatedFit || 68,
+      timeline: roadmapData.timeline || customTimeline,
+      benchmarks,
+      requiredSkills: benchmarks.map((b, i) => ({
+        skillId: `req_${i}`,
+        name: b.skill,
+        requiredLevel: b.required,
+        currentLevel: b.current,
+      })),
+    };
+
+    storageService.saveCareerGoal(uid, newGoal);
+    storageService.saveCustomCareerRoadmap(uid, {
+      ...roadmapData,
+      createdAt: new Date().toISOString(),
+    });
+
+    setCareerGoal(newGoal);
+    setGoalAppliedToast(true);
+    setTimeout(() => setGoalAppliedToast(false), 3500);
+  };
 
   const handlePreFillResume = () => {
     setResumeText(
@@ -137,7 +208,12 @@ export default function CareerSkillsView({ onNavigate }) {
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id === id) {
-          const nextStatus = p.status === "recommended" ? "in_progress" : p.status === "in_progress" ? "completed" : "recommended";
+          const nextStatus =
+            p.status === "recommended"
+              ? "in_progress"
+              : p.status === "in_progress"
+              ? "completed"
+              : "recommended";
           return { ...p, status: nextStatus };
         }
         return p;
@@ -152,25 +228,25 @@ export default function CareerSkillsView({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2 py-0.5 border border-[#0A2858] rounded-xs">
-              Category 4 • Career & Employability
+              Employability & Career Intelligence
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               Career Navigator & Employability Intelligence
             </h1>
           </div>
           <p className="font-body text-sm text-[#55729D] mt-1">
-            Connect verified platform competencies directly to target placement roles, resume verification, and interview prep.
+            Connect verified platform competencies directly to target placement roles, custom domain roadmaps, resume verification, and interview prep.
           </p>
         </div>
 
         {/* Tab Switcher */}
         <div className="flex flex-wrap items-center gap-2">
           {[
-            { id: "navigator", label: "Navigator (S14)", icon: Compass },
-            { id: "map", label: "Skill Map (S15)", icon: Target },
-            { id: "resume", label: "Resume (S16)", icon: FileText },
-            { id: "projects", label: "Projects (S17)", icon: FolderGit2 },
-            { id: "viva", label: "Viva (S13)", icon: Mic },
+            { id: "navigator", label: "Career Navigator", icon: Compass },
+            { id: "map", label: "Skill Benchmark", icon: Target },
+            { id: "resume", label: "Resume Audit", icon: FileText },
+            { id: "projects", label: "Proof Projects", icon: FolderGit2 },
+            { id: "viva", label: "Interview Viva", icon: Mic },
           ].map((t) => {
             const Icon = t.icon;
             const isActive = activeTab === t.id;
@@ -192,12 +268,223 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       </div>
 
-      {/* TAB 1: S14 AI CAREER NAVIGATOR (P14) */}
+      {/* ================= TAB 1: AI CAREER NAVIGATOR ================= */}
       {activeTab === "navigator" && (
         <div className="space-y-6">
+          {/* AI Career Counselor Banner */}
+          <div className="bg-[#EAF2FF] border-[2px] border-[#0A2858] p-4 rounded-md shadow-[3px_3px_0px_#0A2858] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#1867E8] text-white rounded-sm border border-[#0A2858] flex items-center justify-center shrink-0">
+                <Compass className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-heading font-extrabold text-sm text-[#0A2858]">
+                  Unsure which trajectory suits your strengths best?
+                </h4>
+                <p className="font-body text-xs text-[#55729D]">
+                  Chat with our AI Career Counselor to discover custom engineering roles and industry verticals through guided dialogue.
+                </p>
+              </div>
+            </div>
+
+            <NeoButton
+              variant="secondary"
+              size="sm"
+              onClick={() => onNavigate && onNavigate("ai_tutor")}
+              className="shrink-0 text-xs"
+            >
+              <MessageSquare className="w-3.5 h-3.5 mr-1" />
+              <span>Talk to AI Career Counselor</span>
+            </NeoButton>
+          </div>
+
+          {/* Section: Custom Career Path & Domain Roadmap Generator */}
+          <NeoCard variant="default" shadow="md" className="border-[2px] border-[#0A2858]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-[#DDE7F5] pb-3 mb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold uppercase bg-[#FFD43B] text-[#0A2858] px-2 py-0.5 border border-[#0A2858] rounded-xs">
+                    Custom Roadmaps
+                  </span>
+                  <h3 className="font-heading font-extrabold text-lg text-[#0A2858]">
+                    Personalized Career Path & Domain Roadmap
+                  </h3>
+                </div>
+                <p className="font-body text-xs text-[#55729D] mt-0.5">
+                  State any career aspiration and industry domain to generate an AI-tailored 4-phase preparation roadmap.
+                </p>
+              </div>
+
+              {goalAppliedToast && (
+                <div className="flex items-center gap-1.5 bg-[#DCFCE7] text-[#16A34A] border border-[#16A34A] px-3 py-1 rounded-xs font-mono text-xs font-bold animate-fade-in">
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Active Goal Updated!</span>
+                </div>
+              )}
+            </div>
+
+            {/* Input Form */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block font-mono text-xs font-bold text-[#0A2858] uppercase mb-1">
+                  Target Role / Specialty:
+                </label>
+                <input
+                  type="text"
+                  value={customRole}
+                  onChange={(e) => setCustomRole(e.target.value)}
+                  placeholder="e.g. Cloud DevOps Engineer, AI/ML Specialist"
+                  className="w-full p-2.5 bg-[#F4F8FF] border-[1.5px] border-[#0A2858] rounded-xs font-body text-xs text-[#0A2858] focus:outline-none focus:ring-2 focus:ring-[#1867E8]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-xs font-bold text-[#0A2858] uppercase mb-1">
+                  Target Domain / Industry:
+                </label>
+                <input
+                  type="text"
+                  value={customDomain}
+                  onChange={(e) => setCustomDomain(e.target.value)}
+                  placeholder="e.g. Fintech, Healthcare AI, Web3, E-Commerce"
+                  className="w-full p-2.5 bg-[#F4F8FF] border-[1.5px] border-[#0A2858] rounded-xs font-body text-xs text-[#0A2858] focus:outline-none focus:ring-2 focus:ring-[#1867E8]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-xs font-bold text-[#0A2858] uppercase mb-1">
+                  Preparation Timeline:
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={customTimeline}
+                    onChange={(e) => setCustomTimeline(e.target.value)}
+                    className="flex-1 p-2.5 bg-[#F4F8FF] border-[1.5px] border-[#0A2858] rounded-xs font-mono text-xs text-[#0A2858] focus:outline-none"
+                  >
+                    <option value="3 months">3 Months (Intensive)</option>
+                    <option value="6 months">6 Months (Standard)</option>
+                    <option value="12 months">12 Months (Comprehensive)</option>
+                  </select>
+
+                  <NeoButton
+                    variant="primary"
+                    size="sm"
+                    onClick={handleGenerateCustomRoadmap}
+                    disabled={isGeneratingRoadmap || !customRole.trim() || !customDomain.trim()}
+                    className="shrink-0 text-xs"
+                  >
+                    {isGeneratingRoadmap ? (
+                      <span className="flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                        Generating...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Generate Roadmap
+                      </span>
+                    )}
+                  </NeoButton>
+                </div>
+              </div>
+            </div>
+
+            {/* Generated Custom Roadmap Display */}
+            {customRoadmapResult && (
+              <div className="p-4 bg-[#F4F8FF] border-[2px] border-[#0A2858] rounded-sm space-y-4 animate-fade-in">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#DDE7F5] pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-heading font-extrabold text-base text-[#0A2858]">
+                        {customRoadmapResult.targetRole}
+                      </span>
+                      <NeoBadge variant="accent">
+                        {customRoadmapResult.targetDomain}
+                      </NeoBadge>
+                    </div>
+                    <p className="font-body text-xs text-[#55729D] mt-0.5">
+                      Estimated Platform Readiness Fit:{" "}
+                      <strong className="text-[#1867E8]">
+                        {customRoadmapResult.estimatedFit}%
+                      </strong>{" "}
+                      • Target Timeline: {customRoadmapResult.timeline}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <NeoButton
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleApplyCustomRoadmap(customRoadmapResult)}
+                      className="text-xs"
+                    >
+                      <Target className="w-3.5 h-3.5 mr-1" />
+                      <span>Set as Active Career Goal</span>
+                    </NeoButton>
+                  </div>
+                </div>
+
+                {/* 4 Phases */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {customRoadmapResult.phases?.map((ph, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 bg-white border-[1.5px] border-[#0A2858] rounded-xs flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-mono text-[11px] font-extrabold text-[#1867E8] uppercase">
+                            Phase {idx + 1}
+                          </span>
+                          <span className="font-mono text-[10px] text-[#55729D] bg-[#EAF2FF] px-1.5 py-0.5 rounded-xs">
+                            {ph.duration}
+                          </span>
+                        </div>
+                        <h5 className="font-heading font-bold text-xs text-[#0A2858] mb-1">
+                          {ph.phase}
+                        </h5>
+                        <p className="font-body text-[11px] text-[#55729D] leading-relaxed mb-2">
+                          {ph.focus}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-[#DDE7F5] font-mono text-[10px] text-[#16A34A] font-bold">
+                        ★ Milestone: {ph.milestone}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Target Gaps & Industry Focus */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-xs font-mono">
+                  <div className="p-2.5 bg-white border border-[#0A2858] rounded-xs">
+                    <span className="font-bold text-[#DC2626] uppercase block mb-1">
+                      Key Competency Gaps to Close:
+                    </span>
+                    <ul className="list-disc list-inside space-y-0.5 text-[#0A2858]">
+                      {customRoadmapResult.keyGaps?.map((gap, i) => (
+                        <li key={i}>{gap}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="p-2.5 bg-white border border-[#0A2858] rounded-xs">
+                    <span className="font-bold text-[#1867E8] uppercase block mb-1">
+                      {customRoadmapResult.targetDomain} Industry Requirements:
+                    </span>
+                    <p className="font-body text-[#0A2858] leading-relaxed">
+                      {customRoadmapResult.industryContext}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </NeoCard>
+
+          {/* Standard Placement Role Matches */}
           <NeoCard variant="default" shadow="md">
             <h3 className="font-heading font-extrabold text-lg text-[#0A2858] mb-1">
-              Screen S14 • AI Career Match Navigator
+              Platform-Matched Career Trajectories
             </h3>
             <p className="font-body text-xs text-[#55729D] mb-4">
               Ranked career matches grounded strictly in your verified platform skill scores.
@@ -206,24 +493,30 @@ export default function CareerSkillsView({ onNavigate }) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 {
-                  role: "Backend Software Engineer",
+                  role: careerGoal?.targetRole || "Backend Software Engineer",
+                  domain: careerGoal?.targetDomain || "Core Engineering",
                   match: careerGoal?.readinessScore || 58,
-                  status: "Primary Goal",
-                  rationale: "Strong in Arrays (85%) & Strings (74%). Tree Traversal and Recursion are key advancement priorities.",
+                  status: "Active Goal",
+                  rationale:
+                    "Strong in Arrays (85%) & Basic Logic. Tree Traversal and Recursion are key advancement priorities.",
                   badge: "accent",
                 },
                 {
                   role: "Full Stack Developer",
+                  domain: "Modern Web",
                   match: 72,
                   status: "High Match",
-                  rationale: "Good algorithmic fundamentals combined with API structuring skills. Lowest gap friction.",
+                  rationale:
+                    "Good algorithmic fundamentals combined with API structuring skills. Lowest friction path to industry.",
                   badge: "default",
                 },
                 {
                   role: "Data Systems Engineer",
+                  domain: "Cloud & Analytics",
                   match: 51,
                   status: "Emerging Match",
-                  rationale: "Requires advanced Graph algorithms and complexity optimization before interview readiness.",
+                  rationale:
+                    "Requires advanced Graph algorithms, distributed storage, and complexity optimization.",
                   badge: "default",
                 },
               ].map((c, i) => (
@@ -238,9 +531,12 @@ export default function CareerSkillsView({ onNavigate }) {
                         {c.match}%
                       </span>
                     </div>
-                    <h4 className="font-heading font-bold text-base text-[#0A2858] mb-2">
+                    <h4 className="font-heading font-bold text-base text-[#0A2858] mb-1">
                       {c.role}
                     </h4>
+                    <span className="font-mono text-[11px] text-[#1867E8] font-bold block mb-2">
+                      {c.domain}
+                    </span>
                     <p className="font-body text-xs text-[#55729D] leading-relaxed mb-4">
                       {c.rationale}
                     </p>
@@ -252,7 +548,7 @@ export default function CareerSkillsView({ onNavigate }) {
                     onClick={() => setActiveTab("map")}
                     className="w-full text-xs"
                   >
-                    View Role Skill Map
+                    View Role Skill Benchmarks
                   </NeoButton>
                 </div>
               ))}
@@ -261,29 +557,41 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       )}
 
-      {/* TAB 2: S15 SKILL-TO-CAREER MAPPING */}
+      {/* ================= TAB 2: SKILL-TO-CAREER BENCHMARKING ================= */}
       {activeTab === "map" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-[#DDE7F5] pb-4 mb-4">
               <div>
                 <span className="font-mono text-xs font-bold uppercase text-[#55729D]">
-                  Role Benchmark
+                  Active Career Benchmark
                 </span>
                 <h3 className="font-heading font-extrabold text-xl text-[#0A2858]">
-                  {careerGoal?.targetRole}
+                  {careerGoal?.targetRole || "Backend Software Engineer"}
                 </h3>
+                {careerGoal?.targetDomain && (
+                  <span className="font-mono text-xs text-[#1867E8] font-bold">
+                    Domain: {careerGoal.targetDomain}
+                  </span>
+                )}
               </div>
               <div className="text-right">
                 <div className="font-mono text-3xl font-extrabold text-[#1867E8]">
-                  {careerGoal?.readinessScore}%
+                  {careerGoal?.readinessScore || 58}%
                 </div>
                 <div className="font-mono text-xs text-[#55729D]">Job Readiness Index</div>
               </div>
             </div>
 
             <div className="space-y-3">
-              {careerGoal?.requiredSkills?.map((req) => {
+              {(
+                careerGoal?.requiredSkills || [
+                  { skillId: "skill_arrays", name: "Arrays & Dynamic Memory", currentLevel: 85, requiredLevel: 80 },
+                  { skillId: "skill_trees", name: "Tree Traversal & BST", currentLevel: 38, requiredLevel: 75 },
+                  { skillId: "skill_recursion", name: "Recursion & Backtracking", currentLevel: 41, requiredLevel: 70 },
+                  { skillId: "skill_graphs", name: "Graphs & Topological Sort", currentLevel: 25, requiredLevel: 70 },
+                ]
+              ).map((req) => {
                 const live = skills.find((s) => s.skillId === req.skillId);
                 const current = live ? live.mastery : req.currentLevel;
                 const isMastered = current >= req.requiredLevel;
@@ -328,7 +636,7 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       )}
 
-      {/* TAB 3: S16 RESUME SKILL GAP ANALYZER */}
+      {/* ================= TAB 3: RESUME SKILL GAP ANALYZER ================= */}
       {activeTab === "resume" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
@@ -403,12 +711,12 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       )}
 
-      {/* TAB 4: S17 CAREER PROJECT RECOMMENDER (P18) */}
+      {/* ================= TAB 4: CAREER PROJECT RECOMMENDER ================= */}
       {activeTab === "projects" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
             <h3 className="font-heading font-extrabold text-lg text-[#0A2858] mb-1">
-              Screen S17 • Employability Project Recommender
+              Employability Project Recommender
             </h3>
             <p className="font-body text-xs text-[#55729D] mb-4">
               Recommended projects specifically targeted at proving demonstrated skill to recruiters and closing resume gaps.
@@ -425,7 +733,15 @@ export default function CareerSkillsView({ onNavigate }) {
                       <span className="font-heading font-bold text-base text-[#0A2858]">
                         {proj.title}
                       </span>
-                      <NeoBadge variant={proj.status === "completed" ? "success" : proj.status === "in_progress" ? "accent" : "default"}>
+                      <NeoBadge
+                        variant={
+                          proj.status === "completed"
+                            ? "success"
+                            : proj.status === "in_progress"
+                            ? "accent"
+                            : "default"
+                        }
+                      >
                         {proj.status.replace("_", " ")}
                       </NeoBadge>
                     </div>
@@ -434,7 +750,12 @@ export default function CareerSkillsView({ onNavigate }) {
                       onClick={() => handleToggleProject(proj.id)}
                       className="btn btn-secondary text-xs px-2.5 py-1"
                     >
-                      Mark {proj.status === "completed" ? "Recommended" : proj.status === "in_progress" ? "Completed" : "In Progress"}
+                      Mark{" "}
+                      {proj.status === "completed"
+                        ? "Recommended"
+                        : proj.status === "in_progress"
+                        ? "Completed"
+                        : "In Progress"}
                     </button>
                   </div>
 
@@ -453,7 +774,7 @@ export default function CareerSkillsView({ onNavigate }) {
         </div>
       )}
 
-      {/* TAB 5: S13 AI VIVA SIMULATOR */}
+      {/* ================= TAB 5: AI VIVA SIMULATOR ================= */}
       {activeTab === "viva" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
@@ -468,42 +789,82 @@ export default function CareerSkillsView({ onNavigate }) {
               <div className="space-y-4">
                 <div className="p-4 bg-[#EAF2FF] border-[2px] border-[#0A2858] rounded-sm font-mono text-xs space-y-1">
                   <div className="font-bold uppercase text-[#1867E8]">
-                    Viva Examiner Question {vivaStep} of 2:
+                    Viva Examiner Question #{vivaStep}:
                   </div>
-                  <p className="font-body text-sm font-bold text-[#0A2858]">
+                  <p className="text-sm font-heading font-bold text-[#0A2858]">
                     {vivaStep === 1
-                      ? "Explain why recursive functions require a base case. What physically happens to the runtime process if a base case is omitted?"
-                      : "Good explanation. Now, for a Binary Search Tree, how does In-Order traversal guarantee that elements are visited in ascending sorted order?"}
+                      ? "Explain why recursion without a properly configured base case leads to stack overflow in JVM or V8 runtimes. Walk me through the call stack frames."
+                      : "Now suppose you are traversing a binary search tree. Why does in-order traversal (Left, Root, Right) always yield nodes in non-decreasing order?"}
                   </p>
                 </div>
 
-                <textarea
-                  rows={4}
-                  value={vivaAnswer}
-                  onChange={(e) => setVivaAnswer(e.target.value)}
-                  placeholder="Speak or type your explanation here..."
-                  className="w-full p-3 font-body text-sm text-[#0A2858] bg-white border-[2px] border-[#0A2858] rounded-sm focus:outline-none focus:ring-2 focus:ring-[#1867E8]"
-                />
+                <div className="space-y-2">
+                  <label className="font-mono text-xs font-bold text-[#0A2858] uppercase">
+                    Your Verbal/Written Response:
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={vivaAnswer}
+                    onChange={(e) => setVivaAnswer(e.target.value)}
+                    placeholder="Articulate your thought process clearly, referencing memory stack frames or traversal order..."
+                    className="w-full p-3 font-mono text-xs text-[#0A2858] bg-[#F4F8FF] border-[2px] border-[#0A2858] rounded-sm focus:outline-none focus:ring-2 focus:ring-[#1867E8]"
+                  />
+                </div>
 
-                <NeoButton
-                  variant="primary"
-                  size="md"
-                  disabled={!vivaAnswer.trim()}
-                  onClick={handleVivaSubmit}
-                >
-                  <span>{vivaStep === 1 ? "Submit Answer & Proceed" : "Finish Viva Simulation"}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </NeoButton>
+                <div className="flex justify-between items-center pt-2">
+                  <button
+                    onClick={() =>
+                      setVivaAnswer(
+                        vivaStep === 1
+                          ? "Every recursive invocation pushes a stack frame containing local variables and return address onto the runtime call stack. Without a terminating base case, frames accumulate until exceeding thread stack memory."
+                          : "Because a BST guarantees all keys in the left subtree are strictly smaller than the root, and all keys in the right subtree are greater. Visiting left first, then root, then right guarantees strictly ascending order."
+                      )
+                    }
+                    className="text-xs font-mono text-[#1867E8] underline hover:text-[#0A2858]"
+                  >
+                    Load Sample Explanation
+                  </button>
+
+                  <NeoButton
+                    variant="primary"
+                    size="md"
+                    disabled={!vivaAnswer.trim()}
+                    onClick={handleVivaSubmit}
+                  >
+                    <span>{vivaStep === 1 ? "Submit & Next Question →" : "Finish Viva & Get Evaluation"}</span>
+                  </NeoButton>
+                </div>
               </div>
             ) : (
-              <div className="p-5 bg-[#F0FDF4] border-[2px] border-[#16A34A] rounded-sm space-y-3 font-mono text-xs">
-                <div className="font-heading font-bold text-base text-[#14532D]">
-                  ✓ Viva Simulation Evaluation Completed
+              <div className="p-5 bg-[#F4F8FF] border-[2px] border-[#0A2858] rounded-sm space-y-4 animate-fade-in">
+                <div className="flex items-center justify-between border-b border-[#DDE7F5] pb-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-[#16A34A]" />
+                    <h4 className="font-heading font-extrabold text-base text-[#0A2858]">
+                      Viva Simulation Evaluation
+                    </h4>
+                  </div>
+                  <NeoBadge variant="success">Completed</NeoBadge>
                 </div>
-                <div>• <strong>Conceptual Understanding:</strong> {vivaReport.conceptualUnderstanding}</div>
-                <div>• <strong>Clarity of Explanation:</strong> {vivaReport.clarity}</div>
-                <div>• <strong>Technical Depth:</strong> {vivaReport.technicalDepth}</div>
-                <div>• <strong>Recommended Action:</strong> {vivaReport.recommendedPractice}</div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="p-3 bg-white border border-[#0A2858] rounded-xs font-mono text-xs">
+                    <span className="text-[#55729D] uppercase block mb-1">Articulation Clarity:</span>
+                    <span className="font-bold text-[#1867E8] text-sm">{vivaReport.clarity}</span>
+                  </div>
+                  <div className="p-3 bg-white border border-[#0A2858] rounded-xs font-mono text-xs">
+                    <span className="text-[#55729D] uppercase block mb-1">Technical Depth:</span>
+                    <span className="font-bold text-[#0A2858] text-sm">{vivaReport.technicalDepth}</span>
+                  </div>
+                  <div className="p-3 bg-white border border-[#0A2858] rounded-xs font-mono text-xs">
+                    <span className="text-[#55729D] uppercase block mb-1">Next Practice Area:</span>
+                    <span className="font-bold text-[#DC2626] text-sm">Tree Recursion Unwinding</span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-white border border-[#0A2858] rounded-xs text-xs font-body text-[#0A2858]">
+                  <strong>Evaluator Recommendation:</strong> {vivaReport.recommendedPractice}
+                </div>
 
                 <NeoButton
                   variant="secondary"
@@ -513,9 +874,8 @@ export default function CareerSkillsView({ onNavigate }) {
                     setVivaStep(1);
                     setVivaAnswer("");
                   }}
-                  className="mt-3"
                 >
-                  Start New Session
+                  Retake Viva Simulation
                 </NeoButton>
               </div>
             )}

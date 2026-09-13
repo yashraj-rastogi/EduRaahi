@@ -169,8 +169,22 @@ export default function AssessmentView({ onNavigate }) {
     }
   };
 
+  const handleAskAIMentor = (item, idx) => {
+    storageService.setActiveDoubt({
+      questionNumber: idx + 1,
+      assessmentTitle: activeAssessment?.title || "Diagnostic Assessment",
+      questionText: item.questionText,
+      skillId: item.skillId,
+      isCorrect: item.isCorrect,
+      detectedMisconception: item.detectedMisconception,
+      studentOptionId: userAnswers[item.questionId || item.id] || null,
+      timestamp: new Date().toISOString(),
+    });
+    onNavigate("ai_tutor");
+  };
+
   // -------------------------------------------------------------
-  // VIEW 1: RESULTS VIEW (S06)
+  // VIEW 1: RESULTS VIEW
   // -------------------------------------------------------------
   if (result) {
     return (
@@ -180,7 +194,7 @@ export default function AssessmentView({ onNavigate }) {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-2 border-[#0A2858] pb-4 mb-4">
             <div>
               <span className="font-mono text-xs font-bold uppercase text-[#1867E8]">
-                Screen S06 • Assessment Evaluation
+                Diagnostic Evaluation & Misconceptions
               </span>
               <h1 className="font-heading font-extrabold text-2xl text-[#0A2858]">
                 {activeAssessment.title}
@@ -275,10 +289,24 @@ export default function AssessmentView({ onNavigate }) {
                   <p className="font-body text-[#0A2858] mb-2">{item.questionText}</p>
 
                   {item.detectedMisconception && (
-                    <div className="p-2 bg-white border border-[#DC2626] rounded-xs text-[#DC2626]">
+                    <div className="p-2 bg-white border border-[#DC2626] rounded-xs text-[#DC2626] mb-2">
                       ⚠️ <strong>Detected Misconception:</strong> {item.detectedMisconception}
                     </div>
                   )}
+
+                  {/* Ask AI Mentor about this Question */}
+                  <div className="pt-2 mt-2 border-t border-black/10 flex items-center justify-between">
+                    <span className="text-[11px] font-body text-[#55729D]">
+                      Need doubt clarity on this question?
+                    </span>
+                    <button
+                      onClick={() => handleAskAIMentor(item, idx)}
+                      className="flex items-center gap-1.5 px-2.5 py-1 bg-white border border-[#0A2858] rounded-sm text-[11px] font-heading font-bold text-[#1867E8] hover:bg-[#EAF2FF] shadow-[1.5px_1.5px_0px_#0A2858] active:translate-x-0.5 active:translate-y-0.5 transition-all"
+                    >
+                      <Sparkles className="w-3 h-3 text-[#1867E8]" />
+                      <span>Ask AI Mentor</span>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -323,7 +351,7 @@ export default function AssessmentView({ onNavigate }) {
         <div className="bg-white border-[2px] border-[#0A2858] p-4 rounded-md shadow-[3px_3px_0px_#0A2858] flex items-center justify-between">
           <div>
             <div className="font-mono text-xs font-bold text-[#1867E8] uppercase">
-              Screen S05 • Assessment Player
+              Live Assessment Player
             </div>
             <h2 className="font-heading font-extrabold text-lg text-[#0A2858]">
               {activeAssessment.title}
@@ -444,7 +472,7 @@ export default function AssessmentView({ onNavigate }) {
       <div className="bg-white border-[2px] border-[#0A2858] p-5 rounded-md shadow-[4px_4px_0px_#0A2858]">
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2 py-0.5 border border-[#0A2858] rounded-xs">
-            Screen S04
+            Diagnostics & Practice
           </span>
           <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
             Assess & Improve Hub

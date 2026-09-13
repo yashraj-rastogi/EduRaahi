@@ -48,7 +48,7 @@ export default function LearningIntelligenceHub({ onNavigate }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2 py-0.5 border border-[#0A2858] rounded-xs">
-              Screen S02 • S03
+              Skill Graph & Gaps
             </span>
             <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
               Learning Intelligence Hub
@@ -303,12 +303,12 @@ export default function LearningIntelligenceHub({ onNavigate }) {
           </NeoCard>
         </div>
 
-        {/* Col 3: Screen S03 Detailed Skill Inspector Drawer */}
+        {/* Col 3: Detailed Skill Inspector Drawer */}
         <div className="space-y-4">
           <NeoCard variant="default" shadow="md" className="sticky top-20 border-[3px] border-[#0A2858]">
             <div className="flex items-center justify-between mb-3 border-b-2 border-[#0A2858] pb-2">
               <span className="font-mono text-xs font-bold uppercase text-[#1867E8]">
-                Screen S03 • Skill Inspector
+                Skill Detail Inspector
               </span>
               <span className="font-mono text-xs font-bold text-[#0A2858]">
                 ID: {activeSkill?.id}

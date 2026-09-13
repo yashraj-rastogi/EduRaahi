@@ -23,7 +23,7 @@ const TOUR_STEPS = [
   {
     step: 1,
     title: "The Problem & The Closed Loop",
-    badge: "P01, P04 • Architecture",
+    badge: "System Architecture & Closed Loop",
     badgeVariant: "accent",
     icon: Target,
     summary:
@@ -42,7 +42,7 @@ const TOUR_STEPS = [
   {
     step: 2,
     title: "Dependency DAG & Misconception Engine",
-    badge: "P02, P03 • Core Intelligence",
+    badge: "Skill Graph & Root Blockers",
     badgeVariant: "info",
     icon: Layers,
     summary:
@@ -61,7 +61,7 @@ const TOUR_STEPS = [
   {
     step: 3,
     title: "Adaptive Assessment & The +34% Leap",
-    badge: "P05, P10 • Measurable Mastery",
+    badge: "Measurable Proof of Learning",
     badgeVariant: "success",
     icon: CheckCircle,
     summary:
@@ -80,7 +80,7 @@ const TOUR_STEPS = [
   {
     step: 4,
     title: "Guided Socratic AI Mentor (Hint Ladder)",
-    badge: "P08 • Pedagogical Guardrail",
+    badge: "Pedagogical Guardrail",
     badgeVariant: "warning",
     icon: Sparkles,
     summary:
@@ -100,7 +100,7 @@ const TOUR_STEPS = [
   {
     step: 5,
     title: "Teacher Console & Human-in-the-Loop Interventions",
-    badge: "P19, P20, P21 • Educator Power",
+    badge: "Educator Governance & Heatmaps",
     badgeVariant: "accent",
     icon: GraduationCap,
     summary:
@@ -119,7 +119,7 @@ const TOUR_STEPS = [
   {
     step: 6,
     title: "Career Matching & Resume Reality Check",
-    badge: "P14, P16, P17 • Employability",
+    badge: "Placement & Employability Audit",
     badgeVariant: "danger",
     icon: Briefcase,
     summary:

@@ -54,21 +54,21 @@ export default function AppLayout({ activeSection, onSectionChange, onOpenTour, 
 
   // Student Navigation Items
   const studentNavItems = [
-    { id: "student_dashboard", label: "Dashboard", code: "S01", icon: Brain },
-    { id: "learning_intelligence", label: "Learning Intelligence", code: "S02", icon: Layers },
-    { id: "assess_improve", label: "Assess & Improve", code: "S04", icon: FileCheck },
-    { id: "personalized_learning", label: "Personalized Learning", code: "S07", icon: Compass },
-    { id: "ai_tutor", label: "Guided AI Tutor", code: "S09", icon: Sparkles },
-    { id: "career_skills", label: "Career & Skills", code: "S14", icon: Briefcase },
+    { id: "student_dashboard", label: "Dashboard", icon: Brain },
+    { id: "learning_intelligence", label: "Learning Intelligence", icon: Layers },
+    { id: "assess_improve", label: "Assess & Improve", icon: FileCheck },
+    { id: "personalized_learning", label: "Personalized Learning", icon: Compass },
+    { id: "ai_tutor", label: "Guided AI Tutor", icon: Sparkles },
+    { id: "career_skills", label: "Career & Skills", icon: Briefcase },
   ];
 
   // Teacher Navigation Items
   const teacherNavItems = [
-    { id: "teacher_dashboard", label: "Teacher Command", code: "T01", icon: Users },
-    { id: "class_heatmap", label: "Class Analytics", code: "T02", icon: Layers },
-    { id: "intervention_queue", label: "Intervention Queue", code: "T03", icon: UserCheck },
-    { id: "assessment_builder", label: "Assessment Tools", code: "T06", icon: FileCheck },
-    { id: "content_assistant", label: "Content Assistant", code: "T08", icon: BookOpen },
+    { id: "teacher_dashboard", label: "Teacher Command", icon: Users },
+    { id: "class_heatmap", label: "Class Analytics", icon: Layers },
+    { id: "intervention_queue", label: "Intervention Queue", icon: UserCheck },
+    { id: "assessment_builder", label: "Assessment Tools", icon: FileCheck },
+    { id: "content_assistant", label: "Content Assistant", icon: BookOpen },
   ];
 
   const currentNav = isTeacher ? teacherNavItems : studentNavItems;
@@ -229,9 +229,7 @@ export default function AppLayout({ activeSection, onSectionChange, onOpenTour, 
                         <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-[#1867E8]"}`} />
                         <span>{item.label}</span>
                       </div>
-                      <span className={`text-[10px] font-mono ${isActive ? "text-white/80" : "text-[#8298BA]"}`}>
-                        {item.code}
-                      </span>
+                      <ChevronRight className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-[#8298BA]"}`} />
                     </button>
                   );
                 })}
@@ -279,7 +277,7 @@ export default function AppLayout({ activeSection, onSectionChange, onOpenTour, 
                       <Icon className="w-4 h-4" />
                       <span>{item.label}</span>
                     </div>
-                    <span className="font-mono text-[10px]">{item.code}</span>
+                    <ChevronRight className="w-3.5 h-3.5 opacity-60" />
                   </button>
                 );
               })}
