@@ -56,7 +56,7 @@ export default function AssessmentView({ onNavigate }) {
     }));
   };
 
-  // Quick simulation helper for instant hackathon evaluation
+  // Quick simulation helper for instant demonstration and evaluation
   const handleSimulateAttempt = (mode) => {
     if (!activeAssessment) return;
 

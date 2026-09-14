@@ -1,6 +1,6 @@
 # ⚡ EduRaahi — Complete Hackathon Presentation Deck Document
 
-**Track:** AI in Education & Skilling — Lenovo LEAP Hackathon  
+**Theme:** AI in Education & Skilling / Smart Education  
 **Platform:** EduRaahi — AI Learning Intelligence Platform  
 **Repository:** [https://github.com/yashraj-rastogi/EduRaahi.git](https://github.com/yashraj-rastogi/EduRaahi.git)  
 **Live Stack:** Next.js 16 (App Router) + React 19 + Tailwind CSS + Google Gemini 1.5/2.0 + Firebase Firestore & Local Reactive Engine  
@@ -32,8 +32,8 @@ This document contains the exact slide-by-slide copy, visual layout directives, 
 ### 1. Slide Metadata
 * **Header / Title:** ⚡ EduRaahi
 * **Category / Tagline:** AI Learning Intelligence & Skill Diagnostics Platform
-* **Competition Context:** Lenovo LEAP Hackathon — AI in Education & Skilling
-* **Team:** Yashraj Rastogi & Pair
+* **Theme / Track:** AI in Education & Skilling / Smart Education
+* **Team:** Yashraj Rastogi & Team EduRaahi
 
 ### 2. Layout & Visual Composition
 * **Hero Banner:** Bold Neo-Brutalist title card with EduRaahi Navy (`#0A2858`) and Electric Blue (`#1867E8`) accent borders.

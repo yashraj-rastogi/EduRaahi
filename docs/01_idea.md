@@ -1,6 +1,6 @@
 # IDEA — AI Learning Intelligence Platform
 
-**Track:** AI in Education & Skilling — Lenovo LEAP Hackathon
+**Theme:** AI in Education & Skilling / Smart Education
 **Roles:** Student (primary) + Teacher (secondary)
 
 ---
@@ -115,4 +115,4 @@ Handles a class of ~50+ students, cannot manually track individual skill gaps, n
 **Phase 2:** Career Navigator, Resume Analyzer, Project Recommendations, AI Viva, Regional Language, Peer Learning, Advanced Analytics
 **Phase 3:** Institution Analytics, ERP/LMS integration, Industry skill mapping, Placement intelligence, Longitudinal learner profiles, Cross-institution skill benchmarking
 
-See `09_task_plan_roadmap.md` for what's built for the hackathon itself.
+See `09_task_plan_roadmap.md` for the phased implementation plan and deliverables.

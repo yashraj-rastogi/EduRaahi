@@ -115,11 +115,11 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
       {/* 1. Hero Section */}
       <section className="bg-white border-[3px] border-[#0A2858] rounded-md p-6 md:p-10 shadow-[6px_6px_0px_#0A2858] relative overflow-hidden">
         <div className="max-w-4xl space-y-6">
-          {/* Hackathon Track Tag */}
+          {/* Theme & Track Tag */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-bold bg-[#EAF2FF] text-[#1867E8] border-[1.5px] border-[#0A2858] rounded-sm uppercase tracking-wider">
               <Zap className="w-3.5 h-3.5 fill-[#1867E8]" />
-              Lenovo LEAP Hackathon 2026 • AI in Education & Skilling Track
+              AI in Education & Skilling • Smart Education Platform
             </span>
             {/* <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold bg-[#DCFCE7] text-[#16A34A] border-[1.5px] border-[#0A2858] rounded-sm">
               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -519,7 +519,7 @@ export default function LandingPage({ onNavigate, onRoleChange, onOpenTour }) {
           <div className="flex items-center gap-2">
             <Flame className="w-5 h-5 text-[#FBBF24]" />
             <h3 className="font-heading font-extrabold text-xl tracking-tight text-white">
-              The 3-Minute Winning Demo Flow for Hackathon Judges
+              The 3-Minute Golden Path Demo Flow • Live Walkthrough
             </h3>
           </div>
           <button

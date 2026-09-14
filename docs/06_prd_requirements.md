@@ -142,7 +142,7 @@ A teacher can inspect class-level weakness, identify affected students, receive 
 
 **Roles:** Student (primary), Teacher (secondary), Institution/Admin (future, out of scope).
 
-**Scope decision:** All 22 problems identified for this track are in scope for the hackathon MVP. Depth of implementation varies by tier (see §4), but every problem maps to a real, working feature against the shared data model — no problem is silently dropped.
+**Scope decision:** All 22 core problems identified across the AI in Education & Skilling domain are in scope for the platform MVP. Depth of implementation varies by tier (see §4), but every problem maps to a real, working feature against the shared data model — no problem is silently dropped.
 
 ---
 

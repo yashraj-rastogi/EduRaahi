@@ -1,77 +1,95 @@
-# ⚡ EduRaahi — AI Learning Intelligence Platform
+# ⚡ EduRaahi — AI Learning Intelligence & Skill Diagnostics Platform
 
 > **"Know what you know. Discover what you don't. Learn what matters next."**
 
 <div align="center">
   <img src="public/logo.png" alt="EduRaahi Logo" width="140" height="140" />
-  <h3>Continuous Competency Mapping & Pedagogical Intelligence for Higher Education</h3>
-  <p><strong>Track:</strong> AI in Education & Skilling — Lenovo LEAP Hackathon</p>
-  <p><strong>Live Stack:</strong> Next.js 16 (App Router) • React 19 • Tailwind CSS • Google Gemini 1.5/2.0 • Firebase Firestore / Local Reactive Engine</p>
+  <h3>Continuous Competency Mapping, Socratic Mentorship & Pedagogical Intelligence for Higher Education</h3>
+  <p><strong>Theme:</strong> AI in Education & Skilling / Smart Education</p>
+  <p><strong>Live Stack:</strong> Next.js 16 (App Router) • React 19 • Tailwind CSS • Google Gemini 1.5/2.0 • Firebase Firestore & Local Reactive Engine</p>
 </div>
 
 ---
 
 ## 📌 Table of Contents
-1. [The Problem](#1-the-problem-what-is-broken-today)
-2. [Our Idea: EduRaahi](#2-our-idea-the-continuous-intelligence-loop)
-3. [Who is the Target User?](#3-who-is-the-target-user)
-4. [How We Solved the Problem (Technical Architecture & Core Features)](#4-how-we-solved-the-problem)
-5. [How EduRaahi is Unique from Others](#5-how-eduraahi-is-unique-from-others)
-6. [Complete Coverage of All 22 Competition Problems](#6-all-22-canonical-problems-implemented)
-7. [Design System & Neo-Brutalist UI](#7-neo-brutalist-cockpit-design-system)
-8. [The Golden Path Demo Script (3-Minute Hackathon Winning Flow)](#8-the-golden-path-demo-narrative)
-9. [Local Setup & Configuration](#9-setup--running-locally)
-10. [Judging Criteria Alignment](#10-judging-criteria-alignment)
+1. [The Problem: What is Broken in Higher Education & Skilling Today?](#1-the-problem-what-is-broken-in-higher-education--skilling-today)
+2. [The Solution: EduRaahi's Closed-Loop Learning Intelligence](#2-the-solution-eduraahis-closed-loop-learning-intelligence)
+3. [Target Stakeholders & Dual-Loop Architecture](#3-target-stakeholders--dual-loop-architecture)
+4. [How We Solved It: Technical Architecture & Core Pillars](#4-how-we-solved-it-technical-architecture--core-pillars)
+5. [How EduRaahi Differs from Legacy Tools](#5-how-eduraahi-differs-from-legacy-tools)
+6. [Comprehensive Problem & Feature Coverage (All 22 Core Challenges)](#6-comprehensive-problem--feature-coverage-all-22-core-challenges)
+7. [Neo-Brutalist Cockpit Design System](#7-neo-brutalist-cockpit-design-system)
+8. [The Golden Path Demo Script (3-Minute Live Showcase Flow)](#8-the-golden-path-demo-script-3-minute-live-showcase-flow)
+9. [Local Setup & Configuration](#9-local-setup--configuration)
+10. [Evaluation & Judging Alignment](#10-evaluation--judging-alignment)
 
 ---
 
-## 1. The Problem: What is Broken Today?
+## 1. The Problem: What is Broken in Higher Education & Skilling Today?
 
-Higher education and engineering skilling face a systemic breakdown known as the **"Illusion of Competence"**:
+Higher education, computer science curricula, and technical skilling institutions face a structural crisis characterized by the **"Illusion of Competence"**:
 
-1. **One-Shot Testing Produces Superficial Marks, Not True Diagnostics:**
-   - Traditional exams and LMS quizzes give students a single aggregate percentage score (e.g., *"62% on Midterm"*).
-   - This score conceals *which* specific sub-skills failed, *why* the student got it wrong, and *which underlying foundational prerequisite* caused the error.
-2. **Students Lack Meta-Cognition & Self-Direction:**
-   - **Problem P01 & P03:** Students don't know *what* their learning gaps are, and don't understand the conceptual misconceptions behind their mistakes.
-   - **Problem P04 & P05:** Students don't know *what to study next* — resulting in generic, non-adaptive study routines that waste time re-reading material they already know while neglecting critical gaps.
-3. **The AI Tutor Paradox (Generic Chatbots Spoil Learning):**
-   - **Problem P08:** When students turn to standard LLMs (like ChatGPT), the chatbots immediately spit out the complete code and final answer. This encourages passive copy-pasting, destroys cognitive retention, and stunts algorithmic problem-solving ability.
-4. **Instructors are Overwhelmed and Blind to Cohort Micro-Gaps:**
-   - **Problem P19 & P20:** An instructor teaching 60–120 students cannot manually inspect individual submissions to pinpoint class-wide conceptual bottlenecks.
-   - Teachers only discover students are falling behind *after* high-stakes midterms or final dropouts, when it is already too late to intervene.
-5. **The College-to-Career Employability Disconnect:**
-   - **Problem P14–P17:** Students fill resumes with buzzwords (e.g., *"Proficient in Data Structures & Tree Algorithms"*), but have no verified proof of mastery, leaving them unprepared for technical interviews and placement drives.
+```
+Traditional Testing                       Student Reality
+┌─────────────────────────┐               ┌─────────────────────────────────────────────────┐
+│ "Student Scored 62%     │   Conceals   │ • Which specific sub-skill failed?              │
+│  on Data Structures"    │ ────────────► │ • Why did the misconception happen?             │
+│                         │               │ • What prerequisite blocker caused the error?   │
+└─────────────────────────┘               └─────────────────────────────────────────────────┘
+```
+
+### 🚨 Core Failures in the Current Ecosystem:
+
+1. **Superficial Aggregate Marks (Lack of Granular Diagnostics):**
+   - Traditional exams, LMS platforms (Canvas, Moodle), and quizzes evaluate students through one-off numerical marks (e.g., *"62/100"*).
+   - This single aggregate figure conceals *which* specific concepts failed, *why* the student erred, and *which underlying foundational prerequisite* caused the misunderstanding.
+
+2. **Metacognitive Blindness & Hidden Prerequisite Blockers:**
+   - **Lack of Skill Awareness:** Students don't know what they don't know. A student failing *Binary Tree Traversal* or *Graph DFS* often does not realize their true conceptual bottleneck is actually weak *Recursion* or misunderstood *Stack Memory Frames*.
+   - **Non-Adaptive Study Habits:** Because learners lack structured dependency graphs, they resort to generic, non-adaptive routines—re-reading familiar topics they have already mastered while continually avoiding critical prerequisite blockers.
+
+3. **The AI Chatbot Paradox (Generative Answer-Dumping Stunts Learning):**
+   - When students turn to conventional LLM chatbots (ChatGPT, Copilot), the models immediately output complete, ready-to-run code and final answers.
+   - This encourages **passive copy-pasting**, destroys algorithmic reasoning, bypasses the cognitive struggle required for neuroplastic retention, and fosters false confidence.
+
+4. **Instructor Overload & Blindness to Class Micro-Gaps:**
+   - A professor or teaching assistant managing 60–120+ students cannot manually inspect every line of homework or quiz response to identify class-wide conceptual trends.
+   - Consequently, educators only discover that a cohort is struggling *after* high-stakes midterms or semester dropouts, when the window for corrective intervention has already closed.
+
+5. **The College-to-Career Employability & Verified Proof Gap:**
+   - Engineering students populate resumes with unverified claims (e.g., *"Proficient in Advanced Tree Algorithms & Dynamic Programming"*).
+   - Placement officers and technical recruiters have no objective, empirical mechanism to cross-reference *Claimed Skills* against *Demonstrated Mastery*, leading to interview rejections and placement mismatches.
 
 ---
 
-## 2. Our Idea: The Continuous Intelligence Loop
+## 2. The Solution: EduRaahi's Closed-Loop Learning Intelligence
 
-**EduRaahi** (*"Raahi"* = *The Pathfinder / Guide* in Hindi) is not another video platform or one-off quiz tool. It is an **AI Learning Intelligence Engine** that continuously converts student attempts into structured competency graphs, diagnoses deep misconceptions, prescribes targeted next actions, and keeps teachers in the loop for human-verified interventions.
+**EduRaahi** (*"Raahi"* = *The Pathfinder / Guide* in Hindi) is a next-generation **AI Learning Intelligence & Skill Diagnostics Engine**. Rather than functioning as a passive video archive or an answer-generating chatbot, EduRaahi continuously maps student attempts into structured competency graphs, diagnoses root misconceptions, prescribes targeted next actions, and keeps teachers at the helm with actionable early-warning alerts.
 
-### The Closed-Loop Feedback Architecture
+### 🔄 The Continuous Closed-Loop Feedback Engine
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        1. Student Assessment                           │
-│     (Diagnostic / Targeted Practice with Real Multilingual Support)    │
+│                        1. Diagnostic Assessment                        │
+│       (Multi-Skill Diagnostic & Targeted Tests with Real Multilingual) │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
                                    ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │                 2. Deterministic State & Scoring Engine                │
-│    (Zero AI Hallucination: Mathematical Rubric & Weight Calculation)   │
+│       (Zero Hallucination: Mathematical Rubric & Weight Calculation)   │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
                                    ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │             3. Grounded AI Reasoning Layer (Gemini 1.5/2.0)            │
-│ (Diagnoses Concept Misconceptions + Cites Grounded Evidence + Confidence)│
+│  (Diagnoses Root Misconceptions + Cites Grounded Evidence + Confidence)│
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
                                    ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │               4. Dynamic Prerequisite DAG & Adaptive Plan              │
-│    (Graph-based mapping: Identifies Root Preconditions, e.g. Recursion) │
+│     (Graph-based mapping: Identifies Root Preconditions, e.g. Recursion)│
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
                                    ▼
@@ -92,110 +110,138 @@ Higher education and engineering skilling face a systemic breakdown known as the
 │   (Cohort Heatmap + Prioritized Intervention Queue + Editable Actions)  │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
-                                   └───► ↺ Continuous Loop Repeats
+                                   └───► ↺ Continuous Closed-Loop Repeats
 ```
 
----
+### 💡 The 8 Pillars of the EduRaahi Architecture:
 
-## 3. Who is the Target User?
-
-EduRaahi is purposefully built for two synchronized stakeholder personas in higher-education and technical skilling:
-
-### 👤 Primary Persona 1: The Engineering / Higher-Ed Student (Learner)
-- **Profile:** 2nd, 3rd, or 4th-year engineering undergraduate (e.g., *Rahul Sharma*, targeting Software Engineering Campus Placements).
-- **Core Needs:**
-  - Accurate diagnostic of exactly where his programming and data-structure knowledge breaks down.
-  - Step-by-step guidance without having answers spoiled.
-  - Transparent translation of academic coursework into verified placement readiness and resume validation.
-- **Value Realized:** Real-time visibility into his competence, targeted daily study tasks, and a proven, measurable climb in mastery.
-
-### 👨‍🏫 Primary Persona 2: The College Professor & Instructor (Educator)
-- **Profile:** Faculty member or teaching assistant (e.g., *Prof. Sharma*, managing 60–120 undergraduate students in Computer Science).
-- **Core Needs:**
-  - Instant visibility across the entire cohort without grading hundreds of papers line-by-line.
-  - Early-warning detection of at-risk students before exams.
-  - AI tools that draft tests, rubrics, and lesson packages while retaining full teacher authority and editorial control.
-- **Value Realized:** Reduced administrative overhead by >70%, zero blindspots on cohort misconceptions, and meaningful, timely interventions.
-
-### 🏢 Secondary Stakeholder: Placement & Training Cell (T&P Officers)
-- Needs objective data comparing *Claimed Skills* on student resumes vs. *Demonstrated Mastery* on validated assessments, ensuring candidates are interview-ready.
+1. **Diagnostic Competency Graphing:** Students start with a multi-skill diagnostic that builds an evolving skill tree rather than a flat grade.
+2. **Deterministic-First Foundation:** Grades, prerequisite locks, decay formulas, and deadlines are computed 100% mathematically in pure JavaScript. AI never fabricates scores.
+3. **Evidence-Grounded AI Diagnostics:** AI acts strictly as an analytical copilot, extracting exact misconception patterns, citing quoted code/answer evidence, and providing calibrated confidence scores.
+4. **Prerequisite Dependency Traversal:** Visualizes the Directed Acyclic Graph (DAG) of computer science topics, exposing how weaknesses in upstream nodes block downstream understanding.
+5. **Strict Socratic Pedagogical Ladder:** A 5-tier hint architecture (Conceptual Nudge → Algorithmic Strategy → Pseudocode Outline → Syntax Trace → Full Solution) that preserves cognitive friction.
+6. **Empirically Proven Mastery Gains:** Reassessments explicitly measure and highlight before/after skill deltas (e.g., student jumping from 38% to 72% mastery).
+7. **Human-in-the-Loop Teacher Console:** Cohort-wide heatmap matrices, prioritized at-risk student queues, and 1-click teacher review & approval before any AI intervention reaches a student.
+8. **Placement & Career Readiness Auditor:** Objective audit cross-referencing claimed resume keywords with empirically demonstrated skill scores for real-world hiring readiness.
 
 ---
 
-## 4. How We Solved the Problem
+## 3. Target Stakeholders & Dual-Loop Architecture
 
-### 🧠 A. Architectural Invariants (Separation of Determinism and AI)
-EduRaahi resolves the critical liability of generative AI in education by strictly decoupling state from reasoning:
-1. **100% Deterministic State Invariants:**
-   - Attempt scoring, percentage marks, mastery formulas (weighted decay calculations), DAG prerequisite unlocking, and teacher approval states are executed entirely in deterministic JavaScript logic (`src/lib/scoringEngine.js`, `src/lib/masteryEngine.js`).
-   - **AI is NEVER permitted to invent grades, alter test marks, or bypass teacher sign-off.**
-2. **Grounded AI Reasoning (Gemini 1.5/2.0 API):**
-   - AI is utilized exclusively as a reasoning, diagnosis, explanation, and synthesis copilot (`src/lib/aiService.js`).
-   - Every AI response is bound to strict JSON schemas requiring explicit `evidence[]` citations of student mistakes, a calibrated `confidence` score (0.0 to 1.0), and pedagogical rationales.
+EduRaahi bridges the communication and data gap between learners, educators, and institutional career cells:
+
+### 👤 1. The Engineering Student (Learner Persona: *Rahul Sharma*)
+- **Context:** 3rd-year Computer Science undergraduate preparing for campus placement drives.
+- **Pain Points:** Unsure where his Data Structures & Algorithms (DSA) preparation breaks down; gets stuck on recursion-heavy topics; relies on chatbots that spoil solutions; lacks confidence in interview readiness.
+- **Value Realized:** Real-time visibility into his competence DAG, guided Socratic practice that builds problem-solving intuition, and a verified climb in skill scores.
+
+### 👨‍🏫 2. The College Professor & Instructor (Educator Persona: *Prof. Sharma*)
+- **Context:** Faculty member teaching 60–120 undergraduate students in Algorithms and Systems.
+- **Pain Points:** Zero time to manually audit individual assignments; inability to spot at-risk students before semester exams; overwhelming manual effort creating rubrics and lesson packages.
+- **Value Realized:** Instant bird's-eye view via cohort heatmaps, automated early-warning alerts for struggling students, and AI-drafted intervention plans that the teacher can edit and approve with a single click.
+
+### 🏢 3. Training & Placement Officers (Institutional Stakeholder)
+- **Context:** Campus placement cell evaluating students for competitive company recruitment drives.
+- **Pain Points:** Resume inflation, difficulty distinguishing genuine algorithmic problem-solvers from passive copy-pasters.
+- **Value Realized:** Objective, empirical readiness percentage matching verified test performance against real industry job descriptions.
+
+---
+
+## 4. How We Solved It: Technical Architecture & Core Pillars
+
+### 🧠 Architectural Invariants: Decoupling Determinism from AI Reasoning
+
+EduRaahi eliminates the primary liability of generative AI in education—**unreliable grading and hallucinated scores**—by strictly enforcing architectural separation:
+
+```text
+┌──────────────────────────────────────────────────────────┐
+│             DETERMINISTIC STATE ENGINE                   │
+│   • Mathematical Scoring & Percentage Calculation        │
+│   • Exponential Mastery Decay & Skill Weighting Formulas │
+│   • Prerequisite DAG Edge Locking / Unlocking            │
+│   • Teacher Authorization & Dispatch States              │
+└────────────────────────────┬─────────────────────────────┘
+                             │ Validated State Data
+                             ▼
+┌──────────────────────────────────────────────────────────┐
+│             GROUNDED AI REASONING COPILOT                │
+│   • Gemini 1.5/2.0 Structured JSON Schema Responses      │
+│   • Misconception Classification & Cited Mistake Evidence│
+│   • 5-Stage Socratic Hint Generation                     │
+│   • Draft Intervention Proposals & Rubric Suggestions    │
+└──────────────────────────────────────────────────────────┘
+```
+
+1. **Deterministic State Invariants:**
+   - Attempt grading, percentage marks, mastery formulas (`src/lib/scoringEngine.js`, `src/lib/masteryEngine.js`), and DAG dependency unlocks run completely through deterministic logic.
+   - **Rule:** AI is never allowed to calculate a student's grade, modify mastery points, or bypass teacher authorization.
+2. **Grounded AI Reasoning (Google Gemini 1.5/2.0):**
+   - AI is used exclusively for semantic analysis, diagnostic explanation, and socratic scaffolding (`src/lib/aiService.js`).
+   - Every prompt enforces strict JSON output schemas requiring `evidence[]` citations of user mistakes, `pedagogicalRationale`, and a calibrated `confidence` rating (0.0 to 1.0).
 3. **Dual-Mode Resilient Data Layer:**
-   - Integrated with **Firebase Firestore SDK** for persistent multi-device synchronization, paired with a unified **Local Reactive Engine** (`src/lib/storage.js`).
-   - The entire platform is 100% operational offline with zero broken screens, even without internet or API keys.
+   - Integrated with **Firebase Firestore SDK** for multi-device cloud synchronization, backed by a high-speed **Local Reactive Engine** (`src/lib/storage.js`).
+   - Operates 100% reliably in local/offline demo mode with rich fallback fixtures—guaranteeing zero broken screens even without an active internet connection or API keys.
 
 ---
 
-### 🚀 B. Core Feature Suite (Covering the 7 Core Phases)
+### 🚀 Core Feature Modules:
 
-#### 1. Real-time Learner Intelligence Cockpit (`S01`, `S02`, `S03`)
+#### 1. Learner Intelligence Cockpit (`S01`, `S02`, `S03`)
 - **6-Question Learner Model:** Answers in seconds: *Where do I stand? What are my weak spots? Why am I wrong? What should I do next? How does my plan adapt? How prepared am I for placements?*
-- **Interactive Prerequisite DAG:** Visualizes skill dependencies (e.g., *Time Complexity → Arrays → Recursion → Binary Trees → Graph Algorithms*).
-- **Misconception Detection:** Pinpoints underlying mental model flaws (e.g., *"Confusing Pre-order root-first processing with In-order BST sorting"*).
+- **Interactive Prerequisite DAG:** Visualizes skill dependencies (*Time Complexity → Arrays → Recursion → Trees → Graph Algorithms*).
+- **Misconception Detection:** Identifies deep mental model errors (e.g., *"Confusing Pre-order root-first processing with In-order BST sorting"*).
 
 #### 2. Assessment Engine with Measurable Before/After Jump (`S04`, `S05`, `S06`)
 - Full 10-Question Diagnostic Assessment with immediate multi-skill evaluation.
-- Demonstrates a **concrete, measurable leap**: Student Rahul completes targeted Tree Traversal practice and leaps from **38% → 72% mastery (+34 point gain)**, visually recognized by both student and instructor.
+- Demonstrates a **concrete, measurable leap**: Student Rahul completes targeted Tree Traversal practice and leaps from **38% → 72% mastery (+34 point gain)**, visually highlighted across student and instructor views.
 
 #### 3. Guided Socratic AI Tutor (`S09`)
 - Enforces a strict **5-Stage Hint Ladder**:
-  1. *Conceptual Nudge* (identifies the invariant without giving code).
+  1. *Conceptual Nudge* (identifies the core invariant without giving code).
   2. *Algorithmic Strategy* (suggests high-level strategy e.g. recursion base case).
   3. *Pseudocode Outline* (structure and invariant logic).
   4. *Targeted Syntax / Trace* (edge case walkthrough).
   5. *Full Solution with Reflection* (unlocked only after student attempts).
-- Includes an automated **Verification Check** to ensure active understanding before moving forward.
+- Includes an automated **Verification Check** to ensure active comprehension before advancing.
 
 #### 4. Multilingual & Adaptive Personalization (`S07`, `S08`, `S10`, `S11`)
-- **Language Switcher:** Instant translation between English, Hinglish (Hindi-English colloquial mix), and Hindi for conceptual clarity.
+- **Language Switcher:** Instant translation between English, Hinglish (Hindi-English mix), and Hindi for conceptual clarity.
 - **Adaptive Study Planner:** Dynamically increases weekly hour allocations for lagging topics.
-- **Exam Optimizer & Project-Based Scaffolding:** Transforms abstract algorithms into full-stack project blueprints.
+- **Exam Optimizer & Project Scaffolding:** Transforms abstract algorithms into full-stack project blueprints.
 
 #### 5. Teacher Console & Human-in-the-Loop Interventions (`T01`–`T08`)
-- **Cohort Heatmap (`T01`):** Color-coded matrix showing 4 class cohorts across 6 DSA skills, instantly highlighting that Trees (44% cohort average) is the critical bottleneck.
-- **Prioritized Intervention Queue (`T03`):** AI flags at-risk students (e.g., Aman at 44%, Sneha at 51%) and drafts personalized intervention tasks.
-- **Teacher Review & Edit Modal (`T05`):** Instructors can edit the AI's action plan, change deadlines, and formally approve it before dispatch.
+- **Cohort Heatmap (`T01`):** Color-coded matrix showing class cohorts across 6 DSA skills, highlighting that Trees (44% cohort average) is the primary bottleneck.
+- **Prioritized Intervention Queue (`T03`):** AI flags at-risk students and drafts targeted intervention tasks.
+- **Teacher Review & Edit Modal (`T05`):** Instructors edit the AI's action plan, adjust deadlines, and formally approve it before dispatch.
 - **Teacher Assist Tools (`T06`–`T08`): 1-click AI Assessment Builder, Rubric Assignment Evaluator with manual overrides, and complete Lesson Package Generator.
 
 #### 6. Career & Placement Alignment (`S14`–`S17`)
-- **Career Match Navigator:** Calculates objective readiness percentage for target roles (e.g., *Backend Software Engineer: 58%*).
-- **Claimed vs. Demonstrated Skill Audit:** Compares keywords on uploaded student resumes against empirical assessment scores to eradicate resume inflation.
-- **Technical Viva / Interview Simulator:** Real-time AI technical oral practice with instant feedback.
+- **Career Match Navigator:** Calculates objective readiness percentages for target roles (e.g., *Backend Software Engineer: 58%*).
+- **Claimed vs. Demonstrated Skill Audit:** Compares keywords on uploaded student resumes against empirical assessment scores to eliminate resume inflation.
+- **Technical Viva / Interview Simulator:** Real-time AI technical oral practice with instant constructive feedback.
 
 ---
 
-## 5. How EduRaahi is Unique from Others
+## 5. How EduRaahi Differs from Legacy Tools
 
-| Feature / Dimension | Traditional LMS (Moodle, Canvas) | Standard EdTech (Coursera, Udemy) | Generic AI Chatbots (ChatGPT, Claude) | ⚡ EduRaahi AI Platform |
+| Dimension / Capability | Traditional LMS (Canvas, Moodle) | Standard EdTech (Coursera, Udemy) | Generic AI Chatbots (ChatGPT, Copilot) | ⚡ EduRaahi AI Platform |
 |---|---|---|---|---|
-| **Feedback Mechanism** | Static 1-shot grades (e.g. "65%") | Passive video watching & multiple-choice | Single unstructured conversation | **Closed-Loop Intelligence (Diagnose → Socratic Guidance → Re-assess → Leap)** |
-| **Prerequisite Awareness** | ❌ No dependency tracking | ❌ Linear module progression | ❌ No persistent skill graph | **✅ Interactive Prerequisite DAG showing root foundational blockers** |
-| **AI Reliability & Scoring** | ❌ None | ❌ None | ⚠️ Hallucinates marks & scores | **✅ 100% Deterministic Scoring Engine; AI used strictly for grounded reasoning** |
-| **Pedagogical Guardrails** | ❌ None | ❌ None | ❌ Gives away full code & answers instantly | **✅ 5-Stage Socratic Hint Ladder; blocks cognitive laziness** |
-| **Teacher Governance** | ⚠️ Manual, time-consuming grading | ❌ Disconnected from teachers | ❌ No teacher oversight | **✅ Human-in-the-Loop Intervention Queue with review, edit & approval** |
-| **Cohort Diagnostic Heatmap** | ❌ Only raw grade sheets | ❌ Aggregate completion rates | ❌ None | **✅ Live Skill-by-Cohort Heatmap isolating class-wide conceptual gaps** |
+| **Assessment Model** | Static aggregate grades (e.g. "62%") | Passive video watching & simple quizzes | Single unstructured conversation | **Closed-Loop Intelligence (Diagnose → Socratic Guidance → Re-assess → Leap)** |
+| **Prerequisite Awareness** | ❌ None | ❌ Linear module ordering | ❌ No persistent dependency graph | **✅ Interactive Prerequisite DAG exposing foundational root blockers** |
+| **AI Reliability & Scoring** | ❌ None | ❌ None | ⚠️ Hallucinates marks and numbers | **✅ 100% Deterministic State Engine; AI strictly used for grounded reasoning** |
+| **Pedagogical Guardrails** | ❌ None | ❌ None | ❌ Dumps complete code & answers immediately | **✅ 5-Stage Socratic Hint Ladder; preserves cognitive friction** |
+| **Teacher Governance** | ⚠️ Manual, time-consuming grading | ❌ Disconnected from teachers | ❌ Zero teacher oversight | **✅ Human-in-the-Loop Intervention Queue with review, edit & approval** |
+| **Cohort Diagnostic Heatmap** | ❌ Only raw grade spreadsheets | ❌ Aggregate completion rates | ❌ None | **✅ Live Skill-by-Cohort Heatmap isolating class-wide conceptual gaps** |
 | **Resume & Placement Link** | ❌ Completely decoupled | ❌ Generic completion certificates | ❌ Generic resume bullet advice | **✅ Claimed vs. Demonstrated Skill Audit with verified placement match %** |
-| **User Interface Aesthetic** | ⚠️ Outdated, cluttered tables | ⚠️ Generic corporate cards | ⚠️ Plain message bubble thread | **✅ Tactile Neo-Brutalist Cockpit with engineering blueprint grid** |
+| **UI Experience & Design** | ⚠️ Outdated, cluttered tables | ⚠️ Generic corporate cards | ⚠️ Plain message bubble thread | **✅ Tactile Neo-Brutalist Cockpit with engineering blueprint grid** |
 
 ---
 
-## 6. All 22 Canonical Problems Implemented
+## 6. Comprehensive Problem & Feature Coverage (All 22 Core Challenges)
 
-EduRaahi comprehensively implements every single problem specified in the competition taxonomy:
+EduRaahi addresses the comprehensive spectrum of 22 core pedagogical, analytical, and employability challenges in modern higher education and skilling:
 
-| ID | Competition Problem | EduRaahi Solution Component | Screen ID |
+| ID | Challenge / Problem Area | EduRaahi Solution Component | Screen ID |
 |---|---|---|---|
 | **P01** | Students don't know learning gaps | AI Skill Gap Analyzer with cited evidence | `S01`, `S02` |
 | **P02** | No structured view of skills | Interactive Dependency DAG Skill Graph | `S02`, `S03` |
@@ -224,40 +270,40 @@ EduRaahi comprehensively implements every single problem specified in the compet
 
 ## 7. Neo-Brutalist Cockpit Design System
 
-EduRaahi rejects generic, uninspired UI frameworks in favor of an **engineering cockpit aesthetic**:
-- **Tailored Palette:** EduRaahi Navy (`#0A2858`), EduRaahi Blue (`#1867E8`), Surface White (`#FFFFFF`), Blueprint Grid Tint (`#F4F8FF`), Slate Steel (`#55729D`).
-- **Tactile Physics:** 2px/3px high-contrast structural borders, crisp solid offset box shadows (`2px 2px 0px`, `4px 4px 0px`, `6px 6px 0px #0A2858`), and mechanical click depression (`:active translate(2px, 2px)`).
+EduRaahi adopts an intentional, high-contrast **engineering cockpit aesthetic**:
+- **Tailored Palette:** EduRaahi Navy (`#0A2858`), EduRaahi Blue (`#1867E8`), Surface White (`#FFFFFF`), Blueprint Grid Tint (`#F4F8FF`), Slate Steel (`#55729D`), Success Mint (`#16A34A`), Alert Amber (`#FBBF24`).
+- **Tactile Physics:** 2px/3px high-contrast structural borders, solid offset box shadows (`2px 2px 0px`, `4px 4px 0px`, `6px 6px 0px #0A2858`), and mechanical click depression (`:active translate(2px, 2px)`).
 - **Typography Hierarchy:**
   - `Space Grotesk`: High-energy structural headings and control buttons.
-  - `DM Sans`: Crisp, readable body and pedagogical explanations.
+  - `DM Sans`: Crisp, readable body typography and pedagogical explanations.
   - `JetBrains Mono`: Telemetry data, percentages, code blocks, and rubric metrics.
-- **Blueprint Texture:** High-precision graph paper engineering grid (`.bg-grid`).
+- **Blueprint Texture:** High-precision graph paper engineering grid background (`.bg-grid`).
 
 ---
 
-## 8. The Golden Path Demo Narrative
+## 8. The Golden Path Demo Script (3-Minute Live Showcase Flow)
 
-When presenting EduRaahi to judges, follow this **3-minute winning demo sequence**:
+When demonstrating EduRaahi to evaluators, judges, or peers, follow this **3-minute showcase sequence**:
 
-1. **The Diagnostic (`S01` → `S04`):**
+1. **The Diagnostic Baseline (`S01` → `S04`):**
    - Log in as **Rahul Sharma** (3rd-year CS student).
    - Click **"Take Diagnostic (10 Qs)"**. Click *"Pre-fill Diagnostic Simulation"* and hit **Submit**.
    - View baseline score: **58%**.
-2. **The Discovery (`S02`):**
+2. **The Discovery & Dependency DAG (`S02`):**
    - Navigate to **Learning Intelligence**.
-   - Inspect the DAG: Arrays (85%) and Strings (74%) are solid, but **Tree Traversal is critical at 38%**.
-   - Click on the *Trees* node: EduRaahi highlights that the root blocker is weak **Recursion (41%)**.
+   - Inspect the DAG: Arrays (85%) and Strings (74%) are strong, but **Tree Traversal is critical at 38%**.
+   - Click on the *Trees* node: EduRaahi highlights that the root foundational blocker is weak **Recursion (41%)**.
    - Read the AI Misconception alert: *"Confusing pre-order root-first processing with in-order BST sorting"*.
-3. **The Socratic Mentor (`S09`):**
-   - Open **Guided AI Tutor**. Ask for help on Binary Tree In-Order traversal.
+3. **The Guided Socratic Mentor (`S09`):**
+   - Open **Guided AI Tutor**. Ask for assistance on Binary Tree In-Order traversal.
    - Watch the AI provide a **Conceptual Nudge (Stage 1)** instead of dumping code. Request Stage 2 to see the recursive invariant.
-4. **The Measurable Leap (`S04` → `S06`):**
+4. **The Measurable Mastery Jump (`S04` → `S06`):**
    - Return to **Assess & Improve**, select the 5-Question *Tree Traversal Practice Test*.
    - Submit the test: **Trees mastery surges from 38% → 72% (+34 points!)**.
    - The top banner flashes the verified improvement badge.
 5. **The Teacher's Control Console (`T01` → `T05`):**
    - Toggle the header role switcher from **Student** to **Teacher: Prof. Sharma**.
-   - Look at the **Class Heatmap**: Notice Trees highlighted as the lowest skill across Section 3A (44% avg), with Rahul's +34% leap spotlighted in green!
+   - Inspect the **Class Heatmap**: Notice Trees highlighted as the lowest skill across Section 3A (44% avg), with Rahul's +34% leap spotlighted in green!
    - Open the **Intervention Queue**: See at-risk students (Aman, Sneha). Click **"Review & Approve"** on Aman's intervention: edit the assignment instructions, and click **"Approve & Dispatch"**.
 6. **Career & Resume Validation (`S14` → `S16`):**
    - Switch back to Rahul. Open **Career & Skills**.
@@ -265,7 +311,7 @@ When presenting EduRaahi to judges, follow this **3-minute winning demo sequence
 
 ---
 
-## 9. Setup & Running Locally
+## 9. Local Setup & Configuration
 
 ### Prerequisites
 - Node.js 18.0.0 or higher
@@ -284,10 +330,10 @@ npm install
 npm run dev
 ```
 
-Open **`http://localhost:3000`** in your browser to launch the live platform.
+Open **`http://localhost:3000`** in your browser to launch the platform.
 
-### Environment Keys (Optional)
-EduRaahi includes deterministic fallback mock engines and pre-seeded database fixtures, so it runs completely out-of-the-box without keys. To connect real Gemini and Firebase endpoints, configure `.env.local`:
+### Environment Configuration (Optional)
+EduRaahi includes deterministic fallback mock engines and pre-seeded database fixtures, running completely out-of-the-box without keys. To connect live Gemini AI and Firebase cloud persistence, configure `.env.local`:
 ```env
 NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
 NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
@@ -300,19 +346,18 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 ---
 
-## 10. Judging Criteria Alignment
+## 10. Evaluation & Judging Alignment
 
-| Hackathon Criterion | How EduRaahi Delivers & Wins |
+| Evaluation Pillar | How EduRaahi Delivers & Excels |
 |---|---|
-| **Problem Relevance & Impact** | Directly tackles the core failure of modern education: the illusion of competence. Moves education from superficial 1-shot grades to continuous, prerequisite-aware mastery. |
+| **Problem Relevance & Impact** | Directly tackles the core failure of modern education: the illusion of competence. Shifts education from superficial 1-shot grades to continuous, prerequisite-aware mastery. |
 | **Technical Architecture & Logic** | Solves the LLM hallucination danger via strict architectural decoupling: 100% deterministic state machines & mastery calculations, paired with grounded, schema-validated AI explanations. |
-| **Innovation & Completeness** | All 22 canonical problem statements implemented and verified across 7 distinct phases within a cohesive, single-source-of-truth application. |
+| **Innovation & Completeness** | All 22 canonical problem scenarios implemented and verified across 7 distinct phases within a cohesive, single-source-of-truth application. |
 | **Responsible AI & Governance** | Transparent confidence ratings, grounded mistake citations, human-in-the-loop teacher authorization, and refusal to provide lazy shortcut answers. |
 | **User Experience & Execution** | Distinctive, tactile Neo-Brutalist engineering cockpit design with fluid animations, zero broken states, and instant interactive persona switching. |
 
 ---
 
 <div align="center">
-  <sub>Built with 💙 for the Lenovo LEAP Hackathon by Yashraj Rastogi & Team EduRaahi.</sub>
+  <sub>Built with 💙 by Yashraj Rastogi & Team EduRaahi • Smart Education & AI Skilling.</sub>
 </div>
-
