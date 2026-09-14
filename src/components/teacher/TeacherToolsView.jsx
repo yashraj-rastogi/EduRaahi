@@ -9,8 +9,11 @@ import {
   Plus,
   ShieldCheck,
   ArrowRight,
+  ArrowLeft,
   MessageSquare,
   Award,
+  FileQuestion,
+  CheckSquare,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
@@ -18,7 +21,7 @@ import NeoBadge from "../common/NeoBadge";
 import { storageService } from "../../lib/storage";
 
 export default function TeacherToolsView({ onNavigate }) {
-  const [activeTab, setActiveTab] = useState("assessment"); // 'assessment' | 'feedback' | 'content'
+  const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'assessment' | 'feedback' | 'content'
 
   // Assessment Generator State (T06)
   const [topic, setTopic] = useState("Recursion & Dynamic Programming");
@@ -150,61 +153,144 @@ export default function TeacherToolsView({ onNavigate }) {
     }, 1000);
   };
 
+  const tabsConfig = [
+    {
+      id: "assessment",
+      label: "Assessment Builder",
+      title: "Bloom's Assessment Builder",
+      icon: FileQuestion,
+      badge: "AI Generator",
+      description:
+        "Generate multi-format diagnostic quizzes and exam questions calibrated to Bloom's taxonomy levels with instant distractor logic.",
+      meta: "Multiple Choice • Code Analysis • Bloom-Calibrated",
+    },
+    {
+      id: "feedback",
+      label: "Assignment Feedback",
+      title: "Assignment Feedback Assistant",
+      icon: CheckSquare,
+      badge: "Rubric Evaluator",
+      description:
+        "Paste student code or essays for automated rubric scoring, constructive inline feedback, and diagnosed misconception notes.",
+      meta: "Rubric Grounded • Misconception Detection",
+    },
+    {
+      id: "content",
+      label: "Content Assistant",
+      title: "Faculty Content Assistant",
+      icon: BookOpen,
+      badge: "Curriculum Copilot",
+      description:
+        "Generate structured lecture outlines, real-world conceptual analogies, and active classroom discussion prompts in seconds.",
+      meta: "Lesson Plans • Worked Examples • Discussion Guides",
+    },
+  ];
+
+  const currentTabInfo = tabsConfig.find((t) => t.id === activeTab);
+
   return (
-    <div className="space-y-6 max-w-6xl mx-auto animate-fade-in">
-      {/* Header */}
-      <div className="bg-white border-[2px] border-[#0A2858] p-5 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold uppercase bg-[#0A2858] text-white px-2 py-0.5 rounded-xs">
-              Authoring & Grading
-            </span>
-            <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
-              Teacher Authoring & Evaluation Suite
-            </h1>
+    <div className="w-full space-y-6 animate-fade-in">
+      {/* ================= VIEW 1: FULL SCREEN FEATURE CARDS GRID ================= */}
+      {activeTab === "overview" && (
+        <div className="space-y-6">
+          {/* Executive Category Header (Clean, NO tab buttons inside) */}
+          <div className="bg-white border-[3px] border-[#0A2858] p-6 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2.5 py-1 border border-[#0A2858] rounded-xs">
+                  Category • Faculty Authoring & Tools
+                </span>
+                <span className="font-mono text-xs text-[#16A34A] font-bold bg-[#DCFCE7] px-2 py-0.5 rounded-xs border border-[#16A34A]">
+                  ● 3 Tools Available
+                </span>
+              </div>
+              <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-[#0A2858] tracking-tight">
+                Teacher Authoring & Evaluation Suite
+              </h1>
+              <p className="font-body text-sm text-[#55729D] mt-1">
+                Select any authoring tool below to open it in full-width workspace mode:
+              </p>
+            </div>
+
+            <div className="text-right hidden sm:block">
+              <div className="font-mono text-xs text-[#55729D]">Instructor Access</div>
+              <div className="font-heading font-bold text-sm text-[#0A2858]">Prof. S. Sharma (Faculty)</div>
+            </div>
           </div>
-          <p className="font-body text-sm text-[#55729D] mt-1">
-            AI-assisted assessment generator, rubric feedback assistant, and curriculum package authoring.
-          </p>
-        </div>
 
-        {/* Tab Switcher */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveTab("assessment")}
-            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase transition-all ${
-              activeTab === "assessment"
-                ? "bg-[#1867E8] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
-                : "bg-white text-[#0A2858] border-[#0A2858]"
-            }`}
-          >
-            Assessment Builder
-          </button>
-          <button
-            onClick={() => setActiveTab("feedback")}
-            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase transition-all ${
-              activeTab === "feedback"
-                ? "bg-[#1867E8] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
-                : "bg-white text-[#0A2858] border-[#0A2858]"
-            }`}
-          >
-            Assignment Feedback
-          </button>
-          <button
-            onClick={() => setActiveTab("content")}
-            className={`px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase transition-all ${
-              activeTab === "content"
-                ? "bg-[#1867E8] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
-                : "bg-white text-[#0A2858] border-[#0A2858]"
-            }`}
-          >
-            Content Assistant
-          </button>
-        </div>
-      </div>
+          {/* Complete Screen Feature Cards (3-Col Grid) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {tabsConfig.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className="group cursor-pointer bg-white border-[3px] border-[#0A2858] rounded-md p-6 md:p-8 shadow-[5px_5px_0px_#0A2858] hover:shadow-[8px_8px_0px_#1867E8] hover:-translate-y-1 transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div className="w-14 h-14 rounded-sm bg-[#EAF2FF] border-[2px] border-[#0A2858] flex items-center justify-center text-[#1867E8] group-hover:bg-[#1867E8] group-hover:text-white transition-colors shadow-[2px_2px_0px_#0A2858]">
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <NeoBadge variant="accent">{item.badge}</NeoBadge>
+                    </div>
 
-      {/* TAB 1: T06 ASSESSMENT BUILDER */}
-      {activeTab === "assessment" && (
+                    <div>
+                      <h2 className="font-heading font-extrabold text-xl md:text-2xl text-[#0A2858] group-hover:text-[#1867E8] transition-colors tracking-tight">
+                        {item.title}
+                      </h2>
+                      <p className="font-body text-sm text-[#55729D] leading-relaxed mt-2.5">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-5 mt-5 border-t-2 border-[#DDE7F5] flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-[#55729D]">
+                      {item.meta}
+                    </span>
+                    <button className="btn btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 group-hover:bg-[#0A2858] group-hover:text-white transition-colors shadow-[2px_2px_0px_#0A2858]">
+                      <span>Launch Tool</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ================= VIEW 2: FULL-WIDTH OPEN FEATURE WORKSPACE ================= */}
+      {activeTab !== "overview" && (
+        <div className="w-full space-y-6">
+          {/* Top Full-Width Return Bar */}
+          <div className="bg-white border-[3px] border-[#0A2858] p-4 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className="btn btn-primary text-xs px-4 py-2 flex items-center gap-2 shadow-[2px_2px_0px_#0A2858]"
+                title="Return to Feature Cards Grid"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to All Features</span>
+              </button>
+
+              <div className="hidden sm:flex items-center gap-2 font-mono text-xs">
+                <span className="text-[#8298BA]">Faculty Authoring</span>
+                <span className="text-[#8298BA]">/</span>
+                <span className="font-bold text-[#0A2858] text-sm">{currentTabInfo?.title}</span>
+              </div>
+            </div>
+
+            <NeoBadge variant="accent">
+              {currentTabInfo?.badge}
+            </NeoBadge>
+          </div>
+
+          {/* TAB 1: ASSESSMENT BUILDER */}
+          {activeTab === "assessment" && (
         <div className="space-y-6">
           <NeoCard variant="default" shadow="md">
             <h3 className="font-heading font-extrabold text-lg text-[#0A2858] mb-4">
@@ -476,6 +562,8 @@ export default function TeacherToolsView({ onNavigate }) {
               </div>
             )}
           </NeoCard>
+        </div>
+      )}
         </div>
       )}
     </div>

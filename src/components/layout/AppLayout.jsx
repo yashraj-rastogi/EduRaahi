@@ -22,11 +22,14 @@ import {
 import { storageService } from "../../lib/storage";
 
 export default function AppLayout({ activeSection, onSectionChange, onOpenTour, children }) {
-  const [currentUser, setCurrentUser] = useState(storageService.getCurrentUser());
+  const [currentUser, setCurrentUser] = useState({ id: "uid_rahul", role: "student", name: "Rahul Sharma" });
+  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [resetNotice, setResetNotice] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    setCurrentUser(storageService.getCurrentUser());
     const unsubscribe = storageService.subscribe(() => {
       setCurrentUser(storageService.getCurrentUser());
     });
@@ -131,12 +134,12 @@ export default function AppLayout({ activeSection, onSectionChange, onOpenTour, 
           <button
             onClick={handleRoleToggle}
             className={`btn px-3 py-1.5 text-xs flex items-center gap-2 ${
-              isTeacher
+              mounted && isTeacher
                 ? "bg-[#0A2858] text-white border-[2px] border-[#0A2858]"
                 : "bg-[#1867E8] text-white border-[2px] border-[#0A2858]"
             }`}
           >
-            {isTeacher ? (
+            {mounted && isTeacher ? (
               <>
                 <GraduationCap className="w-3.5 h-3.5" />
                 <span className="font-mono">Teacher: Prof. Sharma</span>

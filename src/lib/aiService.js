@@ -8,51 +8,73 @@ const GEMINI_API_KEY =
   "";
 
 /**
- * Call Gemini API with JSON enforcement
+ * Call Gemini API with multi-model resilience and JSON enforcement
  */
 async function callGeminiRaw(systemPrompt, userPrompt) {
   if (!GEMINI_API_KEY) {
     throw new Error("NO_API_KEY");
   }
 
-  // Use Gemini 1.5 Flash (or 2.0 Flash) endpoint
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // Active models available for this API key in order of speed and capability
+  const models = ["gemini-3.6-flash", "gemini-flash-latest", "gemini-3.5-flash", "gemini-2.5-pro"];
+  let lastError = null;
 
-  const payload = {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: `${systemPrompt}\n\nIMPORTANT: Return ONLY valid, raw JSON. Do not include markdown code fences, backticks, or preamble.\n\nInput:\n${userPrompt}` },
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `${systemPrompt}\n\nIMPORTANT: Return ONLY valid, raw JSON. Do not include markdown code fences, backticks, or preamble.\n\nInput:\n${userPrompt}`,
+              },
+            ],
+          },
         ],
-      },
-    ],
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: "application/json",
-    },
-  };
+        generationConfig: {
+          temperature: 0.3,
+          responseMimeType: "application/json",
+        },
+      };
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Gemini API error (${res.status}): ${errText}`);
+      if (!res.ok) {
+        const errText = await res.text();
+        lastError = new Error(`Gemini API ${model} error (${res.status}): ${errText}`);
+        continue;
+      }
+
+      const data = await res.json();
+      const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!textOutput) {
+        continue;
+      }
+
+      // Robust JSON extraction (strip accidental markdown, handle edge cases)
+      const cleaned = textOutput.replace(/```json/gi, "").replace(/```/g, "").trim();
+      try {
+        return JSON.parse(cleaned);
+      } catch (parseErr) {
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/) || cleaned.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          return JSON.parse(jsonMatch[0]);
+        }
+        throw parseErr;
+      }
+    } catch (err) {
+      lastError = err;
+    }
   }
 
-  const data = await res.json();
-  const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!textOutput) {
-    throw new Error("EMPTY_GEMINI_RESPONSE");
-  }
-
-  // Strip accidental markdown fences if present
-  const cleaned = textOutput.replace(/```json/gi, "").replace(/```/g, "").trim();
-  return JSON.parse(cleaned);
+  throw lastError || new Error("All Gemini models failed");
 }
 
 /**
@@ -154,58 +176,58 @@ export async function recommendNextAction({ skillScores = {}, prerequisites = {}
  * 4. Guided AI Socratic Tutor with Hint Ladder (P08)
  * Ladder: 1: Hint -> 2: Conceptual Cue -> 3: Approach -> 4: Pseudocode -> 5: Full Solution
  */
-export async function guidedTutorStep({ message, ladderPosition = 1, topic = "Tree Traversal", lastAnswer = "" }) {
-  const systemPrompt = `You are a Socratic coding mentor for EduRaahi. Never give the full code first. Follow this progressive ladder strictly:
-Ladder 1: Conceptual hint
-Ladder 2: Narrower hint & structural cue
-Ladder 3: Approach / logic breakdown
-Ladder 4: High-level pseudocode
-Ladder 5: Full solution (last resort only)
+export async function guidedTutorStep({
+  message,
+  ladderPosition = 1,
+  topic = "Computer Science",
+  lastAnswer = "",
+  conversationHistory = [],
+}) {
+  const systemPrompt = `You are an expert Socratic coding mentor for EduRaahi.
+The student is asking you a question or sharing code.
+Your goal is to guide the student to master concepts and solve problems step by step WITHOUT giving away the full code upfront unless they have reached the final ladder level.
+Respect this progressive hint ladder:
+Ladder 1: Conceptual hint or real-world analogy.
+Ladder 2: Narrower hint & structural cue.
+Ladder 3: Algorithm approach / logic breakdown.
+Ladder 4: High-level pseudocode.
+Ladder 5: Full working implementation (only if explicitly reached ladder 5).
+
 Current ladder position: ${ladderPosition}.
-Always ask one short understanding verification question at the end.
-Return ONLY JSON: { "reply": string, "nextLadderPosition": number, "verificationQuestion": string }.`;
+Focus topic: "${topic}".
+Address the student's SPECIFIC question or code snippet directly, thoughtfully, and contextually.
+Always conclude with one short, thought-provoking understanding verification question to check their grasp.
+Return ONLY valid JSON matching:
+{
+  "reply": string,
+  "nextLadderPosition": number,
+  "verificationQuestion": string
+}`;
 
-  const userPrompt = JSON.stringify({ message, ladderPosition, topic, lastAnswer });
+  const userPrompt = JSON.stringify({
+    studentMessage: message,
+    ladderPosition,
+    topic,
+    lastAnswer,
+    recentHistory: conversationHistory.slice(-6).map((m) => ({ role: m.role, text: m.text })),
+  });
 
-  // Intelligent fallback based on ladder position
-  const ladderResponses = {
-    1: {
-      reply: "Think about the definition of 'In-Order'. The word 'In' means the root is visited *in between* its children. Where should you start before visiting the root?",
-      nextLadderPosition: 2,
-      verificationQuestion: "Which child node must you finish exploring before touching the current node?",
-    },
-    2: {
-      reply: "Exactly! You must visit the Left subtree first. So the order is: 1) Recursively visit Left child, 2) Process current Root, 3) Recursively visit Right child.",
-      nextLadderPosition: 3,
-      verificationQuestion: "If the node is null, what should your base case return?",
-    },
-    3: {
-      reply: "Great! The base case is `if (!node) return;`. Once you hit null, the call stack returns to the parent node, allowing you to print its value and move to its right child.",
-      nextLadderPosition: 4,
-      verificationQuestion: "Ready to see how this translates into pseudocode?",
-    },
-    4: {
-      reply: `Here is the pseudocode:\n\nfunction inOrder(node):\n  if node is null: return\n  inOrder(node.left)\n  print(node.val)\n  inOrder(node.right)`,
-      nextLadderPosition: 5,
-      verificationQuestion: "Does this call structure match what you expected?",
-    },
-    5: {
-      reply: `Full working implementation:\n\nfunction inorderTraversal(root) {\n  const result = [];\n  function traverse(node) {\n    if (!node) return;\n    traverse(node.left);\n    result.push(node.val);\n    traverse(node.right);\n  }\n  traverse(root);\n  return result;\n}`,
-      nextLadderPosition: 5,
-      verificationQuestion: "What is the time and space complexity of this recursive traversal?",
-    },
+  // Dynamic contextual fallback if Gemini is offline
+  const dynamicFallback = {
+    reply: `Let's look at your question regarding "${topic}": "${message}". To understand this deeply, think about what the initial state or boundary condition needs to be. How would you handle the simplest case where input is minimal?`,
+    nextLadderPosition: Math.min(5, Number(ladderPosition) + 1),
+    verificationQuestion: `What should happen if the input is empty or null?`,
   };
-
-  const fallback = ladderResponses[ladderPosition] || ladderResponses[1];
 
   try {
     const raw = await callGeminiRaw(systemPrompt, userPrompt);
     if (raw && raw.reply) {
       return { ...raw, source: "gemini" };
     }
-    return { ...fallback, source: "deterministic_fallback" };
+    return { ...dynamicFallback, source: "deterministic_fallback" };
   } catch (e) {
-    return { ...fallback, source: "deterministic_fallback" };
+    console.warn("guidedTutorStep fallback:", e.message);
+    return { ...dynamicFallback, source: "deterministic_fallback" };
   }
 }
 
@@ -386,8 +408,25 @@ export async function careerCounselorStep({ message, step = 1, conversationHisto
 Guide the student through an interactive 3-question discovery to pinpoint their ideal tech career path:
 - Step 1: Discover technical interests (e.g. backend systems, AI/ML, fullstack, DevOps/cloud, cybersecurity).
 - Step 2: Discover target domain (e.g. fintech, healthtech, high-scale consumer apps, AI startups).
-- Step 3: Recommend the top 2 matching careers, explain why they fit, and prompt them to generate their personalized roadmap.
-Always return JSON: { "reply": string, "nextStep": number, "recommendedRole": string|null, "suggestedOptions": string[] }.`;
+- Step 3: Recommend the top matching career, explain why it fits their stated interests and strengths, and prompt them to generate their personalized roadmap.
+Return ONLY valid JSON matching:
+{
+  "reply": string,
+  "nextStep": number,
+  "recommendedRole": string|null,
+  "recommendedProfile": {
+    "role": string,
+    "domain": string,
+    "matchScore": number,
+    "timeline": string,
+    "roadmap": {
+      "phases": [
+        { "phase": string, "focus": string }
+      ]
+    }
+  }|null,
+  "suggestedOptions": string[]
+}`;
 
   const userPrompt = JSON.stringify({ message, step, conversationHistory });
 
@@ -396,18 +435,34 @@ Always return JSON: { "reply": string, "nextStep": number, "recommendedRole": st
       reply: "Welcome to Career Counseling! To find the career path that best matches your brain and ambitions, tell me: what kind of problems excite you most? Do you enjoy crafting beautiful user experiences, designing resilient backend APIs, training AI models, or building automated cloud systems?",
       nextStep: 2,
       recommendedRole: null,
+      recommendedProfile: null,
       suggestedOptions: ["Backend & Distributed Systems", "AI & Machine Learning", "Full-Stack Web & Mobile", "Cloud Infrastructure & DevOps"],
     },
     2: {
       reply: "Great choice! Now, what industry or domain would you love to work in? For instance, does High-Frequency Fintech, Healthcare Tech, AI Product Startups, or Autonomous Systems appeal to you most?",
       nextStep: 3,
       recommendedRole: null,
+      recommendedProfile: null,
       suggestedOptions: ["Fintech & Trading Systems", "HealthTech & Bio-Informatics", "AI & Robotics Startups", "Enterprise Cloud & SaaS"],
     },
     3: {
       reply: "Based on our counseling conversation and your strong analytical aptitude in Data Structures (Arrays 85%, Strings 74%), your top recommended path is **Backend & Distributed Systems Engineer**! You have the exact problem-solving foundation required to excel in scalable distributed architectures. Would you like me to generate and apply your personalized 4-phase preparation roadmap now?",
       nextStep: 4,
       recommendedRole: "Backend & Distributed Systems Engineer",
+      recommendedProfile: {
+        role: "Backend & Distributed Systems Engineer",
+        domain: "Fintech & Cloud Systems",
+        matchScore: 94,
+        timeline: "6 Months",
+        roadmap: {
+          phases: [
+            { phase: "Distributed Foundations", focus: "Concurrency, Goroutines / Async, Event Loops" },
+            { phase: "High-Throughput Storage", focus: "Redis Caching, Postgres Indexing, Sharding" },
+            { phase: "Microservice Resilience", focus: "Docker, Kubernetes, Kafka, Circuit Breakers" },
+            { phase: "Production Placement Sprint", focus: "System Design Mock Vivas & Portfolio Capstone" },
+          ],
+        },
+      },
       suggestedOptions: ["Yes, Generate & Apply Roadmap!", "Tell me more about required skills", "Explore alternative: Cloud & DevOps"],
     },
   };

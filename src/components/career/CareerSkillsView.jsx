@@ -18,6 +18,7 @@ import {
   Clock,
   Layers,
   Check,
+  ArrowLeft,
 } from "lucide-react";
 import NeoCard from "../common/NeoCard";
 import NeoButton from "../common/NeoButton";
@@ -27,7 +28,7 @@ import { storageService } from "../../lib/storage";
 import { generateCustomCareerRoadmap } from "../../lib/aiService";
 
 export default function CareerSkillsView({ onNavigate }) {
-  const [activeTab, setActiveTab] = useState("navigator"); // 'navigator' | 'map' | 'resume' | 'projects' | 'viva'
+  const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'navigator' | 'map' | 'resume' | 'projects' | 'viva'
   const [careerGoal, setCareerGoal] = useState(storageService.getCareerGoal("uid_rahul"));
   const [skills, setSkills] = useState(storageService.getStudentSkills("uid_rahul"));
 
@@ -221,55 +222,166 @@ export default function CareerSkillsView({ onNavigate }) {
     );
   };
 
+  const tabsConfig = [
+    {
+      id: "navigator",
+      label: "Career Navigator",
+      title: "AI Career Match Navigator",
+      icon: Compass,
+      badge: "Custom Roadmaps",
+      description:
+        "Ranked placement role matches grounded in platform skills, plus an interactive custom domain roadmap generator.",
+      meta: `Goal: ${careerGoal?.targetRole || "Backend Engineer"} (${careerGoal?.readinessScore || 58}%)`,
+    },
+    {
+      id: "map",
+      label: "Skill Benchmark",
+      title: "Role Skill Benchmark",
+      icon: Target,
+      badge: "Benchmark Matrix",
+      description:
+        "Directly compares your demonstrated platform mastery against target industry benchmark standards.",
+      meta: `${careerGoal?.requiredSkills?.length || 4} Target Competencies Monitored`,
+    },
+    {
+      id: "resume",
+      label: "Resume Audit",
+      title: "Resume Claims vs. Evidence Audit",
+      icon: FileText,
+      badge: "Recruiter Grade",
+      description:
+        "Cross-references claimed qualifications on your resume against platform-verified diagnostic test attempts.",
+      meta: "Automated Evidence Verification",
+    },
+    {
+      id: "projects",
+      label: "Proof Projects",
+      title: "Employability Project Recommender",
+      icon: FolderGit2,
+      badge: "Portfolio Boost",
+      description:
+        "Recommended portfolio projects specifically targeted at proving demonstrated skill to recruiters and closing resume gaps.",
+      meta: `${projects.length} Gap-Closing Projects`,
+    },
+    {
+      id: "viva",
+      label: "Interview Viva",
+      title: "AI Technical Viva Simulator",
+      icon: Mic,
+      badge: "Oral Simulation",
+      description:
+        "Oral technical interview simulation that dynamically adjusts technical depth based on your explanations.",
+      meta: "Technical Depth & Articulation",
+    },
+  ];
+
+  const currentTabInfo = tabsConfig.find((t) => t.id === activeTab);
+
   return (
-    <div className="space-y-6 max-w-6xl mx-auto animate-fade-in">
-      {/* Header */}
-      <div className="bg-white border-[2px] border-[#0A2858] p-5 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2 py-0.5 border border-[#0A2858] rounded-xs">
-              Employability & Career Intelligence
-            </span>
-            <h1 className="font-heading font-extrabold text-2xl text-[#0A2858] tracking-tight">
-              Career Navigator & Employability Intelligence
-            </h1>
+    <div className="w-full space-y-6 animate-fade-in">
+      {/* ================= VIEW 1: FULL SCREEN FEATURE CARDS GRID ================= */}
+      {activeTab === "overview" && (
+        <div className="space-y-6">
+          {/* Executive Category Header (Clean, NO tab buttons inside) */}
+          <div className="bg-white border-[3px] border-[#0A2858] p-6 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-mono text-xs font-bold uppercase bg-[#EAF2FF] text-[#1867E8] px-2.5 py-1 border border-[#0A2858] rounded-xs">
+                  Category • Career & Employability
+                </span>
+                <span className="font-mono text-xs text-[#16A34A] font-bold bg-[#DCFCE7] px-2 py-0.5 rounded-xs border border-[#16A34A]">
+                  ● 5 Features Available
+                </span>
+              </div>
+              <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-[#0A2858] tracking-tight">
+                Career Navigator & Employability Intelligence
+              </h1>
+              <p className="font-body text-sm text-[#55729D] mt-1">
+                Select any career capability below to open it in full-width workspace mode:
+              </p>
+            </div>
+
+            <div className="text-right hidden sm:block">
+              <div className="font-mono text-xs text-[#55729D]">Placement Readiness</div>
+              <div className="font-heading font-extrabold text-xl text-[#1867E8]">{careerGoal?.readinessScore || 58}% Ready</div>
+            </div>
           </div>
-          <p className="font-body text-sm text-[#55729D] mt-1">
-            Connect verified platform competencies directly to target placement roles, custom domain roadmaps, resume verification, and interview prep.
-          </p>
-        </div>
 
-        {/* Tab Switcher */}
-        <div className="flex flex-wrap items-center gap-2">
-          {[
-            { id: "navigator", label: "Career Navigator", icon: Compass },
-            { id: "map", label: "Skill Benchmark", icon: Target },
-            { id: "resume", label: "Resume Audit", icon: FileText },
-            { id: "projects", label: "Proof Projects", icon: FolderGit2 },
-            { id: "viva", label: "Interview Viva", icon: Mic },
-          ].map((t) => {
-            const Icon = t.icon;
-            const isActive = activeTab === t.id;
-            return (
+          {/* Complete Screen Feature Cards (3-Col / 2-Col Grid) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tabsConfig.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className="group cursor-pointer bg-white border-[3px] border-[#0A2858] rounded-md p-6 md:p-8 shadow-[5px_5px_0px_#0A2858] hover:shadow-[8px_8px_0px_#1867E8] hover:-translate-y-1 transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div className="w-14 h-14 rounded-sm bg-[#EAF2FF] border-[2px] border-[#0A2858] flex items-center justify-center text-[#1867E8] group-hover:bg-[#1867E8] group-hover:text-white transition-colors shadow-[2px_2px_0px_#0A2858]">
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <NeoBadge variant={item.badge === "Custom Roadmaps" ? "accent" : "default"}>
+                        {item.badge}
+                      </NeoBadge>
+                    </div>
+
+                    <div>
+                      <h2 className="font-heading font-extrabold text-xl md:text-2xl text-[#0A2858] group-hover:text-[#1867E8] transition-colors tracking-tight">
+                        {item.title}
+                      </h2>
+                      <p className="font-body text-sm text-[#55729D] leading-relaxed mt-2.5">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-5 mt-5 border-t-2 border-[#DDE7F5] flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-[#55729D]">
+                      {item.meta}
+                    </span>
+                    <button className="btn btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 group-hover:bg-[#0A2858] group-hover:text-white transition-colors shadow-[2px_2px_0px_#0A2858]">
+                      <span>Launch Feature</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ================= VIEW 2: FULL-WIDTH OPEN FEATURE WORKSPACE ================= */}
+      {activeTab !== "overview" && (
+        <div className="w-full space-y-6">
+          {/* Top Full-Width Return Bar */}
+          <div className="bg-white border-[3px] border-[#0A2858] p-4 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
               <button
-                key={t.id}
-                onClick={() => setActiveTab(t.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm border-[2px] font-heading text-xs font-bold uppercase transition-all ${
-                  isActive
-                    ? "bg-[#1867E8] text-white border-[#0A2858] shadow-[2px_2px_0px_#0A2858]"
-                    : "bg-white text-[#0A2858] border-[#0A2858] hover:bg-[#F4F8FF]"
-                }`}
+                onClick={() => setActiveTab("overview")}
+                className="btn btn-primary text-xs px-4 py-2 flex items-center gap-2 shadow-[2px_2px_0px_#0A2858]"
+                title="Return to Feature Cards Grid"
               >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{t.label}</span>
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to All Features</span>
               </button>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* ================= TAB 1: AI CAREER NAVIGATOR ================= */}
-      {activeTab === "navigator" && (
+              <div className="hidden sm:flex items-center gap-2 font-mono text-xs">
+                <span className="text-[#8298BA]">Career & Employability</span>
+                <span className="text-[#8298BA]">/</span>
+                <span className="font-bold text-[#0A2858] text-sm">{currentTabInfo?.title}</span>
+              </div>
+            </div>
+
+            <NeoBadge variant="accent">
+              {currentTabInfo?.badge}
+            </NeoBadge>
+          </div>
+
+          {/* TAB 1: AI CAREER NAVIGATOR */}
+          {activeTab === "navigator" && (
         <div className="space-y-6">
           {/* AI Career Counselor Banner */}
           <div className="bg-[#EAF2FF] border-[2px] border-[#0A2858] p-4 rounded-md shadow-[3px_3px_0px_#0A2858] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -880,6 +992,8 @@ export default function CareerSkillsView({ onNavigate }) {
               </div>
             )}
           </NeoCard>
+        </div>
+      )}
         </div>
       )}
     </div>

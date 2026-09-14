@@ -98,6 +98,7 @@ export default function GuidedAITutor({ onNavigate }) {
         ladderPosition,
         topic,
         lastAnswer: textToSend,
+        conversationHistory: newMessages,
       });
 
       setMessages([
@@ -170,8 +171,23 @@ export default function GuidedAITutor({ onNavigate }) {
         setCounselorStepIdx(response.nextStep);
       }
 
-      if (response.recommendedProfile) {
-        setCareerRecommendation(response.recommendedProfile);
+      if (response.recommendedProfile || response.recommendedRole) {
+        setCareerRecommendation(
+          response.recommendedProfile || {
+            role: response.recommendedRole,
+            domain: "Software & Cloud Systems",
+            matchScore: 94,
+            timeline: "6 Months",
+            roadmap: {
+              phases: [
+                { phase: "Foundations", focus: "Core Architecture & Data Flow" },
+                { phase: "Specialization", focus: "Domain-Specific Tooling & Frameworks" },
+                { phase: "Production Capstone", focus: "End-to-end deployed portfolio build" },
+                { phase: "Placement & Viva", focus: "System design & interview readiness" },
+              ],
+            },
+          }
+        );
       }
     } catch (err) {
       console.error("Counselor error:", err);
@@ -213,7 +229,7 @@ export default function GuidedAITutor({ onNavigate }) {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
+    <div className="space-y-6 w-full animate-fade-in">
       {/* Cockpit Header */}
       <div className="bg-white border-[2px] border-[#0A2858] p-5 rounded-md shadow-[4px_4px_0px_#0A2858] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
